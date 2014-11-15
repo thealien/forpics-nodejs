@@ -5,6 +5,6 @@ exports.images = function(req, res) {
     res.render('index', { title: 'admin on page '+ page });
 };
 
-exports.action = function (res, req, next) {
+exports.action = function (/*res, req, next*/) {
 
 };

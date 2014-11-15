@@ -1,0 +1,13 @@
+{
+    "image": {
+        "max_width": 10000,
+        "max_height": 10000,
+        "max_size": 3145728,
+        "allowed_ext": [
+            "jpg", "jpeg", "gif", "png"
+        ],
+        "allowed_mime": [
+            "image/jpeg", "image/pjpeg", "image/png", "image/x-png", "image/gif"
+        ]
+    }
+}

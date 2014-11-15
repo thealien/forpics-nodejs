@@ -13,6 +13,7 @@
     "hbs": "~2.7.0",
     "sequelize": "^2.0.0-rc2",
     "mysql": "^2.5.3",
-    "multer": "^0.1.6"
+    "multer": "^0.1.6",
+    "configaro": "^0.0.2"
   }
 }

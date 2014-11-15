@@ -10,8 +10,9 @@ var routes = {
 };
 
 router.param(function(name, fn){
+    var res;
     if (fn instanceof RegExp) {
-        return function(req, res, next, val){
+        res = function(req, res, next, val){
             var captures;
             if ((captures = fn.exec(String(val)))) {
                 req.params[name] = captures;
@@ -21,6 +22,7 @@ router.param(function(name, fn){
             }
         };
     }
+    return res;
 });
 
 // -------

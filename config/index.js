@@ -1,0 +1,5 @@
+var loader = require('configaro').create(__dirname);
+
+exports.db = loader.load('db');
+
+exports.validation = loader.load('validation');

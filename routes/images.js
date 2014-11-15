@@ -32,6 +32,6 @@ exports.delete_image = function(req, res) {
     res.render('index', { title: 'Delete image ' + path_date + '/' +  guid});
 };
 
-exports.delete_image_handler = function (res, req) {
+exports.delete_image_handler = function (/*res, req*/) {
 
 };

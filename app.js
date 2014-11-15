@@ -1,12 +1,20 @@
 'use strict';
 
-var express = require('express');
+// native modules
 var path = require('path');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
 
-var app = express();
+var config = require('./config');
+
+// express
+var express = require('express'),
+    app = express();
+
+// middleware
+var logger = require('morgan'),
+    cookieParser = require('cookie-parser'),
+    bodyParser = require('body-parser');
+
+// routes config
 var routes = require('./routes');
 
 // view engine setup
@@ -19,6 +27,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// apply routes config
 app.use(routes);
 
 // catch 404 and forward to error handler
@@ -33,7 +42,7 @@ app.use(function(req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-    app.use(function(err, req, res, next) {
+    app.use(function(err, req, res/*, next*/) {
         res.status(err.status || 500);
         res.render('error', {
             message: err.message,
@@ -44,7 +53,7 @@ if (app.get('env') === 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
+app.use(function(err, req, res/*, next*/) {
     res.status(err.status || 500);
     res.render('error', {
         message: err.message,
@@ -52,9 +61,8 @@ app.use(function(err, req, res, next) {
     });
 });
 
+var port = process.env.PORT || 3000;
 
-app.set('port', process.env.PORT || 3000);
-
-var server = app.listen(app.get('port'), function() {
-    console.log('Express server listening on port ' + server.address().port);
+app.listen(port, function() {
+    console.log('Express server listening on port ' + port);
 });
