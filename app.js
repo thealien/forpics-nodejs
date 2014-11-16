@@ -12,7 +12,8 @@ var express = require('express'),
 // middleware
 var logger = require('morgan'),
     cookieParser = require('cookie-parser'),
-    bodyParser = require('body-parser');
+    bodyParser = require('body-parser'),
+    multer  = require('multer');
 
 // routes config
 var routes = require('./routes');
@@ -26,6 +27,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(multer(config.multer));
 
 // apply routes config
 app.use(routes);

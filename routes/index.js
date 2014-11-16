@@ -37,12 +37,12 @@ router.get('/', routes.main.index);
 /**
  * Upload from web
  */
-router.get('/webupload', routes.main.webupload);
+router.post('/up', routes.main.webupload);
 
 /**
  * Upload from windows-client
  */
-router.get('/upload', routes.main.upload);
+router.post('/upload', routes.main.upload);
 
 router.param('path_date', /^[0-9]{8}$/);
 router.param('guid', /^\w+$/);
@@ -75,6 +75,18 @@ router.route('/delete/:path_date/:guid')
 router.route('/admin/:page?')
     .post(routes.admin.action)
     .get(routes.admin.images);
+
+/**
+ * Registration page
+ */
+router.route('/user/register')
+    .all(routes.user.register);
+
+/**
+ * Login page
+ */
+router.route('/user/login')
+    .all(routes.user.login);
 
 /**
  * Page with my images

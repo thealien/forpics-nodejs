@@ -8,7 +8,9 @@ exports.image_single = function(req, res) {
         path_date = params.path_date,
         guid = params.guid;
 
-    res.render('index', { title: 'Page with image ' + path_date + '/' +  guid});
+    res.render('images/view', {
+
+    });
 };
 
 /**
@@ -19,7 +21,9 @@ exports.images_group = function(req, res) {
         path_date = params.path_date,
         guid = params.guid;
 
-    res.render('index', { title: 'Page with images group ' + path_date + '/' +  guid });
+    res.render('images/view', {
+
+    });
 };
 
 /**
@@ -29,7 +33,10 @@ exports.delete_image = function(req, res) {
     var params = req.params,
         path_date = params.path_date,
         guid = params.guid;
-    res.render('index', { title: 'Delete image ' + path_date + '/' +  guid});
+
+    res.render('images/delete', {
+
+    });
 };
 
 exports.delete_image_handler = function (/*res, req*/) {
