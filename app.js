@@ -5,6 +5,16 @@ var path = require('path');
 
 var config = require('./config');
 
+// helpers/services
+var validatorConfig = config.validation.image;
+require('./services/image/validator').init({
+    maxWidth:validatorConfig.max_width,
+    maxHeight:validatorConfig.max_height,
+    maxSize: validatorConfig.max_size,
+    allowedExt:validatorConfig.allowed_ext,
+    allowedMime:validatorConfig.allowed_mime
+});
+
 // express
 var express = require('express'),
     app = express();

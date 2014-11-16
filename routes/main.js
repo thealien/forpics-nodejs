@@ -18,6 +18,8 @@ exports.webupload = function(req, res) {
         images,
         errors = [];
 
+    console.log(files);
+    return true;
     images = files.map(function (file) {
         var isValid = checkFile(file),
             imageIsOk = (isValid === true);

@@ -4,4 +4,4 @@ exports.db = loader.load('db');
 
 exports.validation = loader.load('validation');
 
-exports.validation = loader.load('multer');
+exports.multer = loader.load('multer');
