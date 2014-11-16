@@ -5,6 +5,8 @@ var path = require('path');
 
 var config = require('./config');
 
+console.log(config.imageProcess);
+
 // helpers/services
 var validatorConfig = config.validation.image;
 require('./services/image/validator').init({

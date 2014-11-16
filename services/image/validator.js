@@ -13,7 +13,7 @@ function Validator (options) {
 
 Validator.prototype.maxHeight = 10000;
 Validator.prototype.maxWidth = 10000;
-Validator.prototype.maxSize = 10000;
+Validator.prototype.maxSize = 10*1024*1024;
 Validator.prototype.allowedExt = [
     "jpg", "jpeg", "gif", "png"
 ];
