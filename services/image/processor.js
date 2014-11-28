@@ -12,112 +12,131 @@ function Processor (config) {
 }
 
 Processor.prototype.process = function (image, options, callback) {
-    var result = {
-        originalfilename: image.originalname,
-        size: image.size,
-        width: image.width,
-        height: image.height,
-        psize:null,
-        pwidth: null,
-        pheight: null
-    };
     options = this.resolveOptions(options);
-    this.checkDestinationPaths(function (paths) {
-        if (!paths) {
-            callback(new Error('processor.check_storage.failed'));
+    var processor = this,
+        result = {
+            originalfilename: image.originalname,
+            size: image.size,
+            width: image.width,
+            height: image.height,
+            psize: null,
+            pwidth: null,
+            pheight: null
+        },
+        steps = [],
+        paths;
+
+    var willBeModified = options.resize || options.rotate || options.normalize,
+        filename,
+        targetImage,
+        targetPreview,
+        i;
+
+    /*
+     if (["image/jpeg", "image/pjpeg"].indexOf(image.mime) !== -1) {
+     i.autoOrient();
+     }
+     */
+
+    // 1. checkDestinationPaths
+    steps.push(function (callback) {
+        processor.checkDestinationPaths(function (error, _paths) {
+            if (error) {
+                error = new Error('processor.check_storage.failed');
+            } else {
+                paths = _paths;
+                result.path_date = paths.dPath;
+                filename = util.format('%s.%s', generateFilename(10), image.extension);
+                result.filename = filename;
+                targetImage = paths.image + '/' + filename;
+                targetPreview = paths.preview + '/' + filename;
+            }
+            callback(error);
+        });
+    });
+
+    // 2. Copy main image
+    steps.push(function (callback) {
+        fs.rename(image.path, targetImage, callback);
+    });
+
+    // 3. Process main image
+    if (willBeModified) {
+        steps.push(function (callback) {
+            i = gm(image.path);
+            if (options.resize) {
+                i.resize(options.resize[0], options.resize.height[1]);
+            }
+            if (options.rotate) {
+                i.rotate(options.rotate);
+            }
+            if (options.normalize) {
+                i.normalize();
+            }
+            i.write(targetImage, callback);
+        });
+    }
+
+    // 4. Make thumb
+    if (options.preview) {
+        steps.push(function (callback) {
+            i = i || gm(targetImage);
+            i.resize(options.preview[0], options.preview[1])
+             .write(targetPreview, callback);
+        });
+    }
+
+    //5. Collect dimensions and sizes
+    steps.push(function (callback) {
+        var steps = [];
+        if (willBeModified) {
+            // get image new dimensions
+            steps.push(function (callback) {
+                imagesize(targetImage, function (error, dimensions) {
+                    result.width = dimensions.width;
+                    result.height = dimensions.height;
+                    callback(error);
+                });
+            });
+            // get image new size
+            steps.push(function (callback) {
+                fs.stat(targetImage, function (error, stats) {
+                    if (!error) {
+                        result.size = stats.size;
+                    }
+                    callback(error);
+                });
+            });
+        }
+        // get thumb dimensions
+        steps.push(function (callback) {
+            imagesize(targetPreview, function (error, dimensions) {
+                result.pwidth = dimensions.width;
+                result.pheight = dimensions.height;
+                callback(error);
+            });
+        });
+        // get thumb new size
+        steps.push(function (callback) {
+            fs.stat(targetPreview, function (error, stats) {
+                if (!error) {
+                    result.psize = stats.size;
+                }
+                callback(error);
+            });
+        });
+
+        async.parallel(steps, callback);
+    });
+
+    async.series(steps, function (error, results) {
+        if (error) {
+            callback(error);
+            fs.unlink(targetImage);
             return;
         }
-
-        result.path_date = paths.dPath;
-
-        //var
-        var filename = util.format('%s.%s', generateFilename(10), image.extension),
-            targetImage = paths.image + '/' + filename,
-            targetPreview = paths.preview + '/' + filename,
-            i = gm(image.path);
-
-        if (["image/jpeg", "image/pjpeg"].indexOf(image.mime) !== -1) {
-            i.autoOrient();
-        }
-
-        result.filename = filename;
-
-        if (options.resize) {
-            i.resize(options.resize[0], options.resize.height[1]);
-        }
-        if (options.rotate) {
-            i.rotate(options.rotate);
-        }
-        if (options.normalize) {
-            i.normalize();
-        }
-
-        // TODO if there are no modifications just move file
-        i.write(targetImage, function (error) {
-            if (error) {
-                callback(error);
-                return;
-            }
-            if (options.preview) {
-                gm(targetImage)
-                    .resize(options.preview[0], options.preview[1])
-                    .write(targetPreview, function (error) {
-                        if (error) {
-                            callback(error);
-                            fs.unlink(targetImage);
-                            return;
-                        }
-                        async.parallel([
-                            function (callback) {
-                                imagesize(targetImage, function (error, dimensions) {
-                                    result.width = dimensions.width;
-                                    result.height = dimensions.height;
-                                    callback(error);
-                                });
-                            },
-                            function (callback) {
-                                imagesize(targetPreview, function (error, dimensions) {
-                                    result.pwidth = dimensions.width;
-                                    result.pheight = dimensions.height;
-                                    callback(error);
-                                });
-                            },
-                            function (callback) {
-                                fs.stat(targetImage, function (error, stats) {
-                                    if (!error) {
-                                        result.size = stats.size;
-                                    }
-                                    callback(error);
-                                });
-                            },
-                            function (callback) {
-                                fs.stat(targetPreview, function (error, stats) {
-                                    if (!error) {
-                                        result.psize = stats.size;
-                                    }
-                                    callback(error);
-                                });
-                            }],
-                            function (error) {
-                                if (error) {
-                                    callback(error);
-                                    fs.unlink(targetImage);
-                                    return;
-                                }
-                                result.deleteGuid = guid();
-                                callback(null, result);
-                            }
-                        );
-
-                        /*
-                        collectResult({
-                            image: targetImage,
-                            preview: targetPreview
-                        }, callback);
-                        */
-                    });
-            }
-        });
+        result.deleteGuid = guid();
+        callback(null, result);
     });
 };
 
@@ -152,7 +171,7 @@ Processor.prototype.checkDestinationPaths = function (callback) {
     result = {image: iPath, preview: pPath, dPath: datePath};
 
     if (this.checkedDatePaths[datePath]) {
-        callback(null, true);
+        callback(null, result);
         return;
     }
 
@@ -174,7 +193,7 @@ Processor.prototype.checkDestinationPaths = function (callback) {
         });
     }],function (error/*, result*/) {
         processor.checkedDatePaths[datePath] = !error;
-        callback(error ? false : result);
+        callback(error, result);
     });
 };
 
