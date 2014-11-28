@@ -1,7 +1,6 @@
 'use strict';
 
-var imagesize = require('image-size'),
-    instance = null;
+var instance = null;
 
 function Validator (options) {
     this.maxHeight = options.maxHeight || this.maxHeight;
@@ -21,9 +20,8 @@ Validator.prototype.allowedMime = [
     "image/jpeg", "image/pjpeg", "image/png", "image/x-png", "image/gif"
 ];
 
-Validator.prototype.isValid = function (image, callback) {
-    var error = null,
-        validator = this;
+Validator.prototype.validateImageFile = function (image) {
+    var error = null;
 
     if (image.size > this.maxSize) {
         error = new Error('validation.error.filesize_too_large');
@@ -33,25 +31,22 @@ Validator.prototype.isValid = function (image, callback) {
         error = new Error('validation.error.unsupported_image_type');
     }
 
-    if (error) {
-        callback(error, false);
-        return;
-    }
-
-    imagesize(image.path, function (error, dimensions) {
-        if (error) {
-            error = new Error('validation.error.get_dimensions_failed');
-        } else if (dimensions.width > validator.maxWidth) {
-            error = new Error('validation.error.width_too_large');
-        } else if (dimensions.height > validator.maxHeight) {
-            error = new Error('validation.error.height_too_large');
-        }
-        callback(error, !error);
-    });
-
+    return error;
 };
 
-exports.init = function (options) {
+Validator.prototype.validateDimensions = function (dimensions) {
+    var error = null;
+
+    if (dimensions.width > this.maxWidth) {
+        error = new Error('validation.error.width_too_large');
+    } else if (dimensions.height > this.maxHeight) {
+        error = new Error('validation.error.height_too_large');
+    }
+
+    return error;
+};
+
+exports.create = function (options) {
     instance = new Validator(options);
     return instance;
 };

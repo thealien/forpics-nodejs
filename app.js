@@ -5,17 +5,26 @@ var path = require('path');
 
 var config = require('./config');
 
-console.log(config.imageProcess);
-
 // helpers/services
-var validatorConfig = config.validation.image;
-require('./services/image/validator').init({
-    maxWidth:validatorConfig.max_width,
-    maxHeight:validatorConfig.max_height,
-    maxSize: validatorConfig.max_size,
-    allowedExt:validatorConfig.allowed_ext,
-    allowedMime:validatorConfig.allowed_mime
-});
+var services = require('smallbox');
+
+services.define('app:config', config);
+
+var validatorConfig = config.validation.image,
+    validator = require('./services/image/validator').create({
+        maxWidth:validatorConfig.max_width,
+        maxHeight:validatorConfig.max_height,
+        maxSize:validatorConfig.max_size,
+        allowedExt:validatorConfig.allowed_ext,
+        allowedMime:validatorConfig.allowed_mime
+    });
+
+services.define('image:validator', validator);
+
+var processorConfig = config.imageProcess,
+    processor = require('./services/image/processor').create(processorConfig);
+
+services.define('image:processor', processor);
 
 // express
 var express = require('express'),
