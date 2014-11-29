@@ -8,6 +8,8 @@ var async =require('async'),
     validator = services.require('image:validator'),
     processor = services.require('image:processor');
 
+var filesFieldname = 'uploadfile[]';
+
 /**
  * Main page
  */
@@ -19,67 +21,102 @@ exports.index = function(req, res) {
  * Upload from web
  */
 exports.webupload = function(req, res) {
-    var fieldName = 'uploadfile[]',
-        files = req.files[fieldName] || [],
-        images,
+    var receivedFiles = req.files[filesFieldname] || [],
+        acceptedImages,
         results = [],
-        errors = [];
+        errors = [],
+        steps = [];
 
-    // Normalize files array
-    if (!(files instanceof Array)) {
-        files = [files];
+    // 1. Normalize files array
+    if (!(receivedFiles instanceof Array)) {
+        receivedFiles = [receivedFiles];
     }
 
-    // Filter images files by allowed size/type
-    images = files.filter(function (image) {
-        var error = validator.validateImageFile(image);
-        if (error) {
-            errors.push({
-                file: image,
-                error: error.message
-            });
-        }
-        return !error;
-    });
-
-    async.filter(images, function (image, callback) {
-        /**
-         { fieldname: 'uploadfile[]',
-           originalname: 'Буфер обмена-1.jpg',
-           name: '63578fe9c0c98e74d06203d5de803bbd.jpg',
-           encoding: '7bit',
-           mimetype: 'image/jpeg',
-           path: 'uploads/63578fe9c0c98e74d06203d5de803bbd.jpg',
-           extension: 'jpg',
-           size: 135956,
-           truncated: false,
-           buffer: null }
-         */
-        getDimensions(image, function (error, dimensions) {
+    // Filter files by allowed dimensions
+    steps.push(function (callback) {
+        acceptedImages = receivedFiles.filter(function (image) {
+            var error;
+            if (image.truncated) {
+                error = new Error('File truncated');
+            }
             if (!error) {
-                error = validator.validateDimensions(dimensions);
+                error = validator.validateImageFile(image);
             }
             if (error) {
                 errors.push({
                     file: image,
                     error: error.message
                 });
-                return callback(false);
             }
-
-            image.width = dimensions.width;
-            image.height = dimensions.height;
-
-            callback(true);
+            return !error;
         });
-    }, function (images) {
-        if (images.length) {
-            processImages(images);
-        } else {
-            // TODO set flash messages (errors list)
-            deleteFiles(files);
-            res.redirect('/');
-        }
+        callback();
+    });
+
+    // 2. Filter images by allowed size/type
+    steps.push(function (callback) {
+        async.filter(acceptedImages, function (image, callback) {
+            getDimensions(image, function (error, dimensions) {
+                if (!error) {
+                    error = validator.validateDimensions(dimensions);
+                }
+
+                if (error) {
+                    errors.push({
+                        file: image,
+                        error: error.message
+                    });
+                } else {
+                    image.width = dimensions.width;
+                    image.height = dimensions.height;
+                }
+
+                callback(!error);
+            });
+        }, function (images) {
+            acceptedImages = images || [];
+            callback();
+        });
+    });
+
+    // 4. Process images
+
+    steps.push(function (callback) {
+        var options = resolveUploadOptions(req);
+        async.each(acceptedImages, function (image, callback) {
+            processor.process(image, options, function (error, result) {
+                if (error) {
+                    errors.push({
+                        file: image,
+                        error: error.message
+                    });
+                }
+
+                if (error) {
+                    console.log(error);
+                } else {
+                    results.push(result);
+                    /*
+                     console.log('Processed image:');
+                     console.log(result);
+                     saveImageRecord(result, function (error, data) {
+                     if (!error) {
+                     console.log(data);
+                     } else {
+                     console.log(error);
+                     }
+                     });*/
+                }
+                callback();
+            });
+        }, function (error) {
+            // TODO
+            deleteFiles(receivedFiles);
+            res.send({results: results, errors: errors});
+            // TODO
+        });
+
+        // TODO
     });
 
     function processImages (images) {
@@ -105,7 +142,7 @@ exports.webupload = function(req, res) {
             });
         }, function (error) {
             // TODO
-            deleteFiles(files);
+            deleteFiles(receivedFiles);
             res.send({results: results, errors: errors});
             // TODO
         });
