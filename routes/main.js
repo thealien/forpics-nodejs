@@ -21,18 +21,36 @@ exports.index = function(req, res) {
  * Upload from web
  */
 exports.webupload = function(req, res) {
+    handleUpload(req,  res, function (error, processedImages, rejectedImages) {
+        // TODO
+        console.log(error, processedImages, rejectedImages);
+    });
+};
+
+/**
+ * Upload from windows-client
+ */
+exports.upload = function(req, res) {
+    handleUpload(req,  res, function (error, processedImages, rejectedImages) {
+        // TODO
+        console.log(error, processedImages, rejectedImages);
+        res.send();
+    });
+};
+
+function handleUpload (req, res, callback) {
     var receivedFiles = req.files[filesFieldname] || [],
-        acceptedImages,
-        results = [],
-        errors = [],
+        rejectedImages = [],
+        acceptedImages = [],
+        processedImages = [],
         steps = [];
 
-    // 1. Normalize files array
+    // 0. Normalize files array
     if (!(receivedFiles instanceof Array)) {
         receivedFiles = [receivedFiles];
     }
 
-    // Filter files by allowed dimensions
+    // 1. Filter files by allowed dimensions
     steps.push(function (callback) {
         acceptedImages = receivedFiles.filter(function (image) {
             var error;
@@ -43,7 +61,7 @@ exports.webupload = function(req, res) {
                 error = validator.validateImageFile(image);
             }
             if (error) {
-                errors.push({
+                rejectedImages.push({
                     file: image,
                     error: error.message
                 });
@@ -62,7 +80,7 @@ exports.webupload = function(req, res) {
                 }
 
                 if (error) {
-                    errors.push({
+                    rejectedImages.push({
                         file: image,
                         error: error.message
                     });
@@ -79,83 +97,39 @@ exports.webupload = function(req, res) {
         });
     });
 
-    // 4. Process images
-
+    // 3. Process images
     steps.push(function (callback) {
         var options = resolveUploadOptions(req);
         async.each(acceptedImages, function (image, callback) {
             processor.process(image, options, function (error, result) {
                 if (error) {
-                    errors.push({
+                    rejectedImages.push({
                         file: image,
                         error: error.message
                     });
-                }
-
-                if (error) {
-                    console.log(error);
                 } else {
-                    results.push(result);
-                    /*
-                     console.log('Processed image:');
-                     console.log(result);
-                     saveImageRecord(result, function (error, data) {
-                     if (!error) {
-                     console.log(data);
-                     } else {
-                     console.log(error);
-                     }
-                     });*/
+                    processedImages.push(result);
                 }
                 callback();
             });
-        }, function (error) {
-            // TODO
-            deleteFiles(receivedFiles);
-            res.send({results: results, errors: errors});
-            // TODO
-        });
-
-        // TODO
+        }, callback);
     });
 
-    function processImages (images) {
-        var options = resolveUploadOptions(req);
-        async.each(images, function (image, callback) {
-            processor.process(image, options, function (error, result) {
-                if (error) {
-                    console.log(error);
-                } else {
-                    results.push(result);
-                    /*
-                    console.log('Processed image:');
-                    console.log(result);
-                    saveImageRecord(result, function (error, data) {
-                        if (!error) {
-                            console.log(data);
-                        } else {
-                            console.log(error);
-                        }
-                    });*/
-                }
-                callback();
+    // 4. Save results in DB
+    steps.push(function (callback) {
+        async.each(processedImages, function (image, callback) {
+            saveImageRecord(imagesize,  function (error, callback) {
+                callback(); // continue in any way
             });
-        }, function (error) {
-            // TODO
-            deleteFiles(receivedFiles);
-            res.send({results: results, errors: errors});
-            // TODO
-        });
-    }
+        }, callback);
+    });
 
-};
-
-/**
- * Upload from windows-client
- */
-exports.upload = function(req, res) {
-    // TODO
-};
+    // 5. Remove tmp files, return results
+    async.series(steps, function (error) {
+        deleteRejectedImages(rejectedImages);
+        callback(error, processedImages, rejectedImages);
+    });
+}
 
 /**
  *
@@ -193,9 +167,9 @@ function saveImageRecord (data, callback) {
     // return result/error to callback
 }
 
-function deleteFiles (files) {
-    files = files || [];
-    files.forEach(function (file) {
-        fs.unlink(file.path);
+function deleteRejectedImages (images) {
+    images = images || [];
+    images.forEach(function (image) {
+        fs.unlink(image.file.path);
     });
 }
