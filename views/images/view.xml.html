@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <imagehost>
-    {{#each rejectedImages~}}
+    {% for image in rejectedImages -%}
     <file>
-        <error>{{file.originalname}}: {{error.message}}</error>
+        <error>{{image.file.originalname|e}}: {{image.error.message|e}}</error>
     </file>
-    {{~/each~}}
-    {{~#each processedImages~}}
+    {%- endfor %}
+    {% for image in processedImages -%}
     <file>
-        <url>{{../globals.baseUrl}}/{{../globals.paths.images}}/{{path_date}}/{{filename}}</url>
-        <delurl>{{../globals.baseUrl}}/delete/{{path_date}}/{{deleteGuid}}</delurl>
-        <width>{{width}}</width>
-        <height>{{height}}</height>
-        <size>{{fileSize size}}</size>
-        <preview_url>{{#if psize}}{{../globals.baseUrl}}/{{../globals.paths.previews}}/{{path_date}}/{{filename}}{{/if}}</preview_url>
-        <pwidth>{{pwidth}}</pwidth>
-        <pheight>{{pheight}}</pheight>
-        <psize>{{fileSize psize}}</psize>
+        <url>{{globals.baseUrl}}/{{globals.paths.images}}/{{image.path_date}}/{{image.filename}}</url>
+        <delurl>{{globals.baseUrl}}/delete/{{image.path_date}}/{{image.deleteGuid}}</delurl>
+        <width>{{image.width}}</width>
+        <height>{{image.height}}</height>
+        <size>{{image.size|fileSize}}</size>
+        <preview_url>{% if image.psize %}{{globals.baseUrl}}/{{globals.paths.previews}}/{{image.path_date}}/{{image.filename}}{% endif %}</preview_url>
+        <pwidth>{{image.pwidth}}</pwidth>
+        <pheight>{{image.pheight}}</pheight>
+        <psize>{{image.psize|fileSize}}</psize>
     </file>
-    {{~/each}}
+    {%- endfor %}
 </imagehost>

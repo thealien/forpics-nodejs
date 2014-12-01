@@ -40,7 +40,7 @@ var logger = require('morgan'),
 var routes = require('./routes');
 
 var swig = require('swig');
-//hbs.registerHelper('fileSize',require('./helpers/format.js').fileSize);
+swig.setFilter('fileSize',require('./helpers/format.js').fileSize);
 // view engine setup
 swig.setDefaults({ cache: false });
 app.engine('html', swig.renderFile);

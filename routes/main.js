@@ -206,7 +206,7 @@ function deleteRejectedImages (images) {
 
     function sendXmlResponse (res, error, processedImages, rejectedImages) {
     res.type('xml');
-    res.render('images/view.xml.hbs', {
+    res.render('images/view.xml.html', {
         layout: false,
         globals: {
             baseUrl: 'http://mysite.com',
@@ -222,7 +222,7 @@ function deleteRejectedImages (images) {
 
 function sendJsonResponse (res, error, processedImages, rejectedImages) {
     res.type('json');
-    res.render('images/view.xml.hbs', {
+    res.render('images/view.xml.html', {
         layout: false,
         globals: {
             baseUrl: 'http://mysite.com',
