@@ -39,11 +39,13 @@ var logger = require('morgan'),
 // routes config
 var routes = require('./routes');
 
-var hbs = require('hbs');
-hbs.registerHelper('fileSize',require('./helpers/format.js').fileSize);
+var swig = require('swig');
+//hbs.registerHelper('fileSize',require('./helpers/format.js').fileSize);
 // view engine setup
+swig.setDefaults({ cache: false });
+app.engine('html', swig.renderFile);
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'hbs');
+app.set('view engine', 'html');
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
