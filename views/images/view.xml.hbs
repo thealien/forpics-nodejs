@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<imagehost>
+    {{#each rejectedImages~}}
+    <file>
+        <error>{{file.originalname}}: {{error.message}}</error>
+    </file>
+    {{~/each~}}
+    {{~#each processedImages~}}
+    <file>
+        <url>{{../globals.baseUrl}}/{{../globals.paths.images}}/{{path_date}}/{{filename}}</url>
+        <delurl>{{../globals.baseUrl}}/delete/{{path_date}}/{{deleteGuid}}</delurl>
+        <width>{{width}}</width>
+        <height>{{height}}</height>
+        <size>{{fileSize size}}</size>
+        <preview_url>{{#if psize}}{{../globals.baseUrl}}/{{../globals.paths.previews}}/{{path_date}}/{{filename}}{{/if}}</preview_url>
+        <pwidth>{{pwidth}}</pwidth>
+        <pheight>{{pheight}}</pheight>
+        <psize>{{fileSize psize}}</psize>
+    </file>
+    {{~/each}}
+</imagehost>

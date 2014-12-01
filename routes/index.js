@@ -37,12 +37,13 @@ router.get('/', routes.main.index);
 /**
  * Upload from web
  */
-router.post('/up', routes.main.webupload);
+//router.post('/up', routes.main.webupload);// TODO
 
 /**
  * Upload from windows-client
  */
 router.post('/upload', routes.main.upload);
+router.post('/up', routes.main.upload);
 
 router.param('path_date', /^[0-9]{8}$/);
 router.param('guid', /^\w+$/);

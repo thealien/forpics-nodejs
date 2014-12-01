@@ -39,6 +39,8 @@ var logger = require('morgan'),
 // routes config
 var routes = require('./routes');
 
+var hbs = require('hbs');
+hbs.registerHelper('fileSize',require('./helpers/format.js').fileSize);
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');

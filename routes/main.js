@@ -24,6 +24,22 @@ exports.webupload = function(req, res) {
     handleUpload(req,  res, function (error, processedImages, rejectedImages) {
         // TODO
         console.log(error, processedImages, rejectedImages);
+        var location,
+            errors = [];
+        switch (processedImages.length) {
+            case 0:
+                // nothing uploaded
+                location = 'MAIN_URL';
+                break;
+            case 1:
+                // 1 image uploaded
+                location = 'URL_OF_IMAGE';
+                break;
+            default:
+                // group of images uploaded
+                location = 'URL_OF_IMAGES_GROUP';
+        }
+        res.redirect(location);
     });
 };
 
@@ -32,9 +48,23 @@ exports.webupload = function(req, res) {
  */
 exports.upload = function(req, res) {
     handleUpload(req,  res, function (error, processedImages, rejectedImages) {
-        // TODO
-        console.log(error, processedImages, rejectedImages);
-        res.send();
+        var type;
+        if (error) {
+            res.send(500, 'Internal Server Error');
+            return;
+        }
+
+        type = req.get('json') ? 'json' : 'json';
+        switch (type) {
+            case 'json':
+                sendJsonResponse(res, error, processedImages, rejectedImages);
+                break;
+            case 'xml':
+                sendXmlResponse(res, error, processedImages, rejectedImages);
+            default:
+                res.send(418, "I'm a teapot");
+                break;
+        }
     });
 };
 
@@ -118,9 +148,9 @@ function handleUpload (req, res, callback) {
     // 4. Save results in DB
     steps.push(function (callback) {
         async.each(processedImages, function (image, callback) {
-            saveImageRecord(imagesize,  function (error, callback) {
+            //saveImageRecord(imagesize,  function (error, callback) {
                 callback(); // continue in any way
-            });
+            //});
         }, callback);
     });
 
@@ -173,3 +203,36 @@ function deleteRejectedImages (images) {
         fs.unlink(image.file.path);
     });
 }
+
+    function sendXmlResponse (res, error, processedImages, rejectedImages) {
+    res.type('xml');
+    res.render('images/view.xml.hbs', {
+        layout: false,
+        globals: {
+            baseUrl: 'http://mysite.com',
+            paths: {
+                images: 'i',
+                previews: 'p'
+            }
+        },
+        processedImages: processedImages,
+        rejectedImages: rejectedImages
+    });
+}
+
+function sendJsonResponse (res, error, processedImages, rejectedImages) {
+    res.type('json');
+    res.render('images/view.xml.hbs', {
+        layout: false,
+        globals: {
+            baseUrl: 'http://mysite.com',
+            paths: {
+                images: 'i',
+                previews: 'p'
+            }
+        },
+        processedImages: processedImages,
+        rejectedImages: rejectedImages
+    });
+}
+
