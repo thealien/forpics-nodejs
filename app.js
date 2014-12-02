@@ -40,7 +40,7 @@ var logger = require('morgan'),
 var routes = require('./routes');
 
 var swig = require('swig');
-swig.setFilter('fileSize',require('./helpers/format.js').fileSize);
+swig.setFilter('fileSize',require('./views/helpers.js').fileSize);
 // view engine setup
 swig.setDefaults({ cache: false });
 app.engine('html', swig.renderFile);
@@ -53,6 +53,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(multer(config.multer));
+
+app.use(function (req, res, next) {
+    app.locals.baseUrl = req.protocol + '://' + req.headers.host;
+    next();
+});
 
 // apply routes config
 app.use(routes);

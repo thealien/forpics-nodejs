@@ -7,12 +7,12 @@
     {%- endfor %}
     {% for image in processedImages -%}
     <file>
-        <url>{{globals.baseUrl}}/{{globals.paths.images}}/{{image.path_date}}/{{image.filename}}</url>
+        <url>{{baseUrl}}/{{globals.paths.images}}/{{image.path_date}}/{{image.filename}}</url>
         <delurl>{{globals.baseUrl}}/delete/{{image.path_date}}/{{image.deleteGuid}}</delurl>
         <width>{{image.width}}</width>
         <height>{{image.height}}</height>
         <size>{{image.size|fileSize}}</size>
-        <preview_url>{% if image.psize %}{{globals.baseUrl}}/{{globals.paths.previews}}/{{image.path_date}}/{{image.filename}}{% endif %}</preview_url>
+        <preview_url>{% if image.psize %}{{baseUrl}}/{{globals.paths.previews}}/{{image.path_date}}/{{image.filename}}{% endif %}</preview_url>
         <pwidth>{{image.pwidth}}</pwidth>
         <pheight>{{image.pheight}}</pheight>
         <psize>{{image.psize|fileSize}}</psize>
