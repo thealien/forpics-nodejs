@@ -39,9 +39,9 @@ var logger = require('morgan'),
 // routes config
 var routes = require('./routes');
 
+// view engine setup
 var swig = require('swig');
 swig.setFilter('fileSize',require('./views/helpers.js').fileSize);
-// view engine setup
 swig.setDefaults({ cache: false });
 app.engine('html', swig.renderFile);
 app.set('views', path.join(__dirname, 'views'));
@@ -54,6 +54,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(multer(config.multer));
 
+// setup some "locals"
 app.use(function (req, res, next) {
     app.locals.baseUrl = req.protocol + '://' + req.headers.host;
     next();
