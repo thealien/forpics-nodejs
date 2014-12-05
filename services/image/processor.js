@@ -4,6 +4,7 @@ var imagesize = require('image-size'),
     async = require('async'),
     fs = require('fs'),
     util = require('util'),
+    utils = require('../../utils'),
     gm = require('gm');
 
 function Processor (config) {
@@ -46,7 +47,9 @@ Processor.prototype.process = function (image, options, callback) {
             } else {
                 paths = _paths;
                 result.path_date = paths.dPath;
-                filename = util.format('%s.%s', generateFilename(10), image.extension);
+                result.deleteGuid = utils.guid();
+                result.guid = utils.generateFilename(10);
+                filename = util.format('%s.%s', result.guid, image.extension.toLowerCase());
                 result.filename = filename;
                 targetImage = paths.image + '/' + filename;
                 targetPreview = paths.preview + '/' + filename;
@@ -135,7 +138,6 @@ Processor.prototype.process = function (image, options, callback) {
             fs.unlink(targetImage);
             return;
         }
-        result.deleteGuid = guid();
         callback(null, result);
     });
 };
@@ -202,37 +204,6 @@ Processor.prototype.getDatePath = function () {
         path = ''+date.getFullYear() + (date.getMonth()+1) + ('0'+date.getDate()+'').substr(-2);
     return path;
 };
-
-function collectResult (image, callback) {
-    var result = {};
-
-
-    // TODO
-    // image.image
-    // image.preview
-}
-
-function generateFilename(max){
-    var g = guid();
-    max = +max || g.length;
-    return g.substr(0, rand(7, max));
-}
-
-function rand(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-var guid = (function() {
-    function s4() {
-        return Math.floor((1 + Math.random()) * 0x10000)
-            .toString(16)
-            .substring(1);
-    }
-    return function() {
-        return s4()+s4()+s4()+s4();
-    };
-})();
-
 
 exports.Processor = Processor;
 

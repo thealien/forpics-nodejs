@@ -55,6 +55,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(multer(config.multer));
 
 // setup some "locals"
+app.locals.paths = {
+    images: 'i', // TODO move to config
+    previews: 'p' // TODO move to config
+};
 app.use(function (req, res, next) {
     app.locals.baseUrl = req.protocol + '://' + req.headers.host;
     next();

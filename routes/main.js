@@ -6,7 +6,9 @@ var async =require('async'),
     services = require('smallbox'),
     uploadConfig = services.require('app:config').imageProcess,
     validator = services.require('image:validator'),
-    processor = services.require('image:processor');
+    processor = services.require('image:processor'),
+    models = require('../models'),
+    utils = require('../utils');
 
 var filesFieldname = 'uploadfile[]';
 
@@ -130,6 +132,7 @@ function handleUpload (req, res, callback) {
     // 3. Process images
     steps.push(function (callback) {
         var options = resolveUploadOptions(req);
+        var group = utils.guid();
         async.each(acceptedImages, function (image, callback) {
             processor.process(image, options, function (error, result) {
                 if (error) {
@@ -138,6 +141,7 @@ function handleUpload (req, res, callback) {
                         error: error.message
                     });
                 } else {
+                    result.group = group;
                     processedImages.push(result);
                 }
                 callback();
@@ -147,10 +151,18 @@ function handleUpload (req, res, callback) {
 
     // 4. Save results in DB
     steps.push(function (callback) {
+        var meta = {
+            ip: req.ip,
+            userId: res.user ? res.user.id : 0,
+            useragent: resolveUseragentId(req.get('User-Agent'))
+        };
         async.each(processedImages, function (image, callback) {
-            //saveImageRecord(imagesize,  function (error, callback) {
+            saveImageRecord(image,  meta, function (error) {
+                if (error) {
+                    console.error(error);
+                }
                 callback(); // continue in any way
-            //});
+            });
         }, callback);
     });
 
@@ -190,11 +202,28 @@ function getDimensions (image, callback) {
 /**
  *
  * @param {Object} data
+ * @param {Object} meta
  * @param {Function} callback
  */
-function saveImageRecord (data, callback) {
-    // TODO save image data to DB,
-    // return result/error to callback
+function saveImageRecord (data, meta, callback) {
+    var image = models.Image.build({
+        filename: data.filename,
+        deleteGuid: data.deleteGuid,
+        width: data.width,
+        height: data.height,
+        filesize: data.size,
+        preview: !!data.psize,
+        originalfilename: data.originalfilename,
+        guid: data.guid,
+        path_date: data.path_date,
+        group: data.group,
+        useragent: meta.useragent,
+        ip: meta.ip,
+        uploaduserid: meta.userId
+    });
+    image.save().success(function (result) {
+        callback(null, result);
+    }).error(callback);
 }
 
 function deleteRejectedImages (images) {
@@ -209,7 +238,6 @@ function deleteRejectedImages (images) {
     res.render('images/view.xml.html', {
         layout: false,
         globals: {
-            baseUrl: 'http://mysite.com',
             paths: {
                 images: 'i',
                 previews: 'p'
@@ -234,5 +262,14 @@ function sendJsonResponse (res, error, processedImages, rejectedImages) {
         processedImages: processedImages,
         rejectedImages: rejectedImages
     });
+}
+
+function resolveUseragentId (useragent) {
+    var id = 0;
+    useragent = useragent || '';
+    if (useragent.indexOf('ForPicsUploader') !==-1 ) {
+        id = 1;
+    }
+    return id;
 }
 

@@ -1,7 +1,7 @@
 var services = require('smallbox'),
     config = services.require('app:config').db,
     Sequelize = require('sequelize'),
-    db = new Sequelize(config.database, config.username, config.password, {
+    db = new Sequelize(config.database, config.user, config.password, {
         host: config.host,
         port: config.port,
         define: {
@@ -42,10 +42,7 @@ var Image = db.define('images', {
     // `ip` varchar(15) NOT NULL
     ip: {
         type: Sequelize.STRING(15),
-        allowNull:      false,
-        validate: {
-            isIP: true
-        }
+        allowNull:      false
     },
 
     // `deleteGuid` varchar(32) NOT NULL
