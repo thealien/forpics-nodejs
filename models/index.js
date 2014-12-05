@@ -42,7 +42,10 @@ var Image = db.define('images', {
     // `ip` varchar(15) NOT NULL
     ip: {
         type: Sequelize.STRING(15),
-        allowNull:      false
+        allowNull:      false,
+        validate: {
+            isIP: true
+        }
     },
 
     // `deleteGuid` varchar(32) NOT NULL
@@ -151,6 +154,7 @@ var User = db.define('users', {
     email: {
         type: Sequelize.STRING,
         allowNull:      false,
+        unique: true,
         isEmail: true
     },
 
