@@ -1,0 +1,11 @@
+{% for image in images -%}
+<div>
+    <p>{{baseUrl}}/{{paths.images}}/{{image.path_date}}/{{image.filename}}</p>
+    <p>{{baseUrl}}/delete/{{image.path_date}}/{{image.deleteGuid}}</p>
+    <p>{{image.width}}</p>
+    <p>{{image.height}}</p>
+    <p>{{image.filesize|fileSize}}</p>
+    <p>{% if image.preview %}{{baseUrl}}/{{paths.previews}}/{{image.path_date}}/{{image.filename}}{% endif %}</p>
+</div>
+<hr>
+{%- endfor %}

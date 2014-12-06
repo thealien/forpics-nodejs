@@ -1,16 +1,12 @@
 'use strict';
 
-function generateFilename(max){
-    var g = guid();
-    max = +max || g.length;
-    return g.substr(0, rand(7, max));
-}
+var crypto = require('crypto');
 
-function rand(min, max) {
+exports.rand = function rand (min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+};
 
-var guid = (function() {
+exports.guid = (function guid () {
     function s4() {
         return Math.floor((1 + Math.random()) * 0x10000)
             .toString(16)
@@ -21,6 +17,6 @@ var guid = (function() {
     };
 })();
 
-exports.generateFilename = generateFilename;
-exports.guid = guid;
-exports.rand = rand;
+exports.md5 = function md5 (input) {
+    return crypto.createHash('md5').update(input).digest("hex");
+};

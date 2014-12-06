@@ -74,6 +74,13 @@ router.route('/delete/:path_date/:guid')
  * Admin page
  */
 router.route('/admin/:page?')
+    .all(function (req, res, next) {
+        if (req.isAuthenticated()) {
+            next();
+        } else {
+            res.redirect('/');
+        }
+    })
     .post(routes.admin.action)
     .get(routes.admin.images);
 
@@ -81,13 +88,18 @@ router.route('/admin/:page?')
  * Registration page
  */
 router.route('/user/register')
+    .post(routes.user.register_handler)
     .all(routes.user.register);
 
 /**
  * Login page
  */
 router.route('/user/login')
+    .post(routes.user.login_handler)
     .all(routes.user.login);
+
+router.route('/user/logout')
+    .post(routes.user.logout_handler);
 
 /**
  * Page with my images

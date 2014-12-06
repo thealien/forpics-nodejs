@@ -1,4 +1,7 @@
+'use strict';
+
 var services = require('smallbox'),
+    utils = require('../utils'),
     config = services.require('app:config').db,
     Sequelize = require('sequelize'),
     db = new Sequelize(config.database, config.user, config.password, {
@@ -144,7 +147,10 @@ var User = db.define('users', {
     password: {
         type: Sequelize.STRING(50),
         allowNull:      false,
-        notEmpty: true
+        notEmpty: true,
+        set: function(password) {
+            return utils.md5(password);
+        }
     },
 
     // `email` varchar DEFAULT NULL,
@@ -167,6 +173,12 @@ var User = db.define('users', {
         defaultValue: Sequelize.NOW
     }
 
+}, {
+    instanceMethods: {
+        samePassword: function (password) {
+            return this.password === utils.md5(password);
+        }
+    }
 });
 
 

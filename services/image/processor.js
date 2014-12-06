@@ -48,7 +48,7 @@ Processor.prototype.process = function (image, options, callback) {
                 paths = _paths;
                 result.path_date = paths.dPath;
                 result.deleteGuid = utils.guid();
-                result.guid = utils.generateFilename(10);
+                result.guid = generateFilename(10);
                 filename = util.format('%s.%s', result.guid, image.extension.toLowerCase());
                 result.filename = filename;
                 targetImage = paths.image + '/' + filename;
@@ -204,6 +204,12 @@ Processor.prototype.getDatePath = function () {
         path = ''+date.getFullYear() + (date.getMonth()+1) + ('0'+date.getDate()+'').substr(-2);
     return path;
 };
+
+function generateFilename(max){
+    var guid = utils.guid();
+    max = +max || guid.length;
+    return guid.substr(0, utils.rand(7, max));
+}
 
 exports.Processor = Processor;
 

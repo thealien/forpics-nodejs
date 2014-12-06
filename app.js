@@ -33,8 +33,12 @@ var express = require('express'),
 // middleware
 var logger = require('morgan'),
     cookieParser = require('cookie-parser'),
+    session = require('express-session'),
     bodyParser = require('body-parser'),
-    multer  = require('multer');
+    multer  = require('multer'),
+    passport = require('./services/user/passport');
+
+services.define('app:passport', passport);
 
 // routes config
 var routes = require('./routes');
@@ -51,8 +55,13 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(session({ secret: 'hammer-time' }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(multer(config.multer));
+
+// Passport
+app.use(passport.initialize());
+app.use(passport.session());
 
 // setup some "locals"
 app.locals.paths = {
