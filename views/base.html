@@ -15,6 +15,7 @@
 {% block body %}
 <body>
 <div id="wrapper">
+    User: {% if user %}{{user.username}}{% else %}guest{% endif %}
     {% block center %}
     <div id='center'>
         <div id='content'>

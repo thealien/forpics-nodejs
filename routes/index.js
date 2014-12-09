@@ -1,14 +1,15 @@
 'use strict';
-
 var express = require('express');
 var router = express.Router();
 var routes = {
     main:   require('./main'),
     images: require('./images'),
     admin:  require('./admin'),
-    user:   require('./user')
+    user:   require('./user'),
+    error:  require('./error')
 };
 
+// param handlers
 router.param(function(name, fn){
     var res;
     if (fn instanceof RegExp) {
@@ -24,87 +25,17 @@ router.param(function(name, fn){
     }
     return res;
 });
-
-// -------
-// Routes
-// -------
-
-/**
- * Main page
- */
-router.get('/', routes.main.index);
-
-/**
- * Upload from web
- */
-//router.post('/up', routes.main.webupload);// TODO
-
-/**
- * Upload from windows-client
- */
-router.post('/upload', routes.main.upload);
-router.post('/up', routes.main.upload);
-
 router.param('path_date', /^[0-9]{8}$/);
 router.param('guid', /^\w+$/);
 router.param('page', function (req, res, next) {
-    console.log(req.params.page);
     req.params.page = Math.max(+req.params.page || 1, 1);
     next();
 });
 
-/**
- * Page with image
- */
-router.get('/image/:path_date/:guid', routes.images.image_single);
-
-/**
- * Page with images group
- */
-router.get('/images/:path_date/:guid', routes.images.images_group);
-
-/**
- * Delete image
- */
-router.route('/delete/:path_date/:guid')
-    .post(routes.images.delete_image_handler)
-    .get(routes.images.delete_image);
-
-/**
- * Admin page
- */
-router.route('/admin/:page?')
-    .all(function (req, res, next) {
-        if (req.isAuthenticated()) {
-            next();
-        } else {
-            res.redirect('/');
-        }
-    })
-    .post(routes.admin.action)
-    .get(routes.admin.images);
-
-/**
- * Registration page
- */
-router.route('/user/register')
-    .post(routes.user.register_handler)
-    .all(routes.user.register);
-
-/**
- * Login page
- */
-router.route('/user/login')
-    .post(routes.user.login_handler)
-    .all(routes.user.login);
-
-router.route('/user/logout')
-    .post(routes.user.logout_handler);
-
-/**
- * Page with my images
- */
-router.get('/my/:page?', routes.user.images);
-
-
-module.exports = router;
+module.exports = function (app, config, container) {
+    routes.main(router, config, container);
+    routes.images(router, config, container);
+    routes.admin(router, config, container);
+    routes.user(router, config, container);
+    routes.error(router, config, container);
+};

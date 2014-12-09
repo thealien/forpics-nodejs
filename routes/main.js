@@ -3,72 +3,85 @@
 var async =require('async'),
     fs = require('fs'),
     imagesize = require('image-size'),
-    services = require('smallbox'),
-    uploadConfig = services.require('app:config').imageProcess,
-    validator = services.require('image:validator'),
-    processor = services.require('image:processor'),
-    models = require('../models'),
-    utils = require('../utils');
+    utils = require('../utils'),
+    models,
+    uploadConfig,
+    validator,
+    processor;
 
 var filesFieldname = 'uploadfile[]';
 
-/**
- * Main page
- */
-exports.index = function(req, res) {
-    res.render('index', { title: 'Main page' });
-};
+module.exports = function (router, config, container) {
+    models = container.require('app:models');
+    uploadConfig = config.imageProcess;
+    validator = container.require('image:validator');
+    processor = container.require('image:processor');
 
-/**
- * Upload from web
- */
-exports.webupload = function(req, res) {
-    handleUpload(req,  res, function (error, processedImages, rejectedImages) {
-        // TODO
-        console.log(error, processedImages, rejectedImages);
-        var location,
-            errors = [];
-        switch (processedImages.length) {
-            case 0:
-                // nothing uploaded
-                location = 'MAIN_URL';
-                break;
-            case 1:
-                // 1 image uploaded
-                location = 'URL_OF_IMAGE';
-                break;
-            default:
-                // group of images uploaded
-                location = 'URL_OF_IMAGES_GROUP';
-        }
-        res.redirect(location);
+
+    /**
+     * Main page
+     */
+    router.get('/', function(req, res) {
+        res.render('index', { title: 'Main page' });
     });
-};
 
-/**
- * Upload from windows-client
- */
-exports.upload = function(req, res) {
-    handleUpload(req,  res, function (error, processedImages, rejectedImages) {
-        var type;
-        if (error) {
-            res.send(500, 'Internal Server Error');
-            return;
-        }
 
-        type = req.get('json') ? 'json' : 'json';
-        switch (type) {
-            case 'json':
-                sendJsonResponse(res, error, processedImages, rejectedImages);
-                break;
-            case 'xml':
-                sendXmlResponse(res, error, processedImages, rejectedImages);
-            default:
-                res.send(418, "I'm a teapot");
-                break;
-        }
+    /**
+     * Upload from web | Upload from windows-client
+     */
+    router.post('/(up|upload)', function(req, res) {
+        handleUpload(req,  res, function (error, processedImages, rejectedImages) {
+            // TODO
+            console.log(error, processedImages, rejectedImages);
+            var location;
+            switch (processedImages.length) {
+                case 0:
+                    // nothing uploaded
+                    location = 'MAIN_URL';
+                    break;
+                case 1:
+                    // 1 image uploaded
+                    location = 'URL_OF_IMAGE';
+                    break;
+                default:
+                    // group of images uploaded
+                    location = 'URL_OF_IMAGES_GROUP';
+            }
+            res.redirect(location);
+        });
     });
+
+
+    /* TODO | return me
+    router.post('/(upload)', function(req, res) {
+        handleUpload(req,  res, function (error, processedImages, rejectedImages) {
+            var type;
+            if (error) {
+                res.send(500, 'Internal Server Error');
+                return;
+            }
+
+            type = req.get('json') ? 'json' : 'json';
+            switch (type) {
+                case 'json':
+                    sendJsonResponse(res, error, processedImages, rejectedImages);
+                    break;
+                case 'xml':
+                    sendXmlResponse(res, error, processedImages, rejectedImages);
+                default:
+                    res.send(418, "I'm a teapot");
+                    break;
+            }
+        });
+    });
+    */
+
 };
+
+
+//
+// Helpers functions
+//
 
 function handleUpload (req, res, callback) {
     var receivedFiles = req.files[filesFieldname] || [],

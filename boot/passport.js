@@ -2,7 +2,7 @@
 
 var passport       = require('passport'),
     LocalStrategy  = require('passport-local').Strategy,
-    User = require('../../models').User;
+    User;
 
 passport.use(new LocalStrategy({
     usernameField: 'username',
@@ -17,8 +17,8 @@ passport.use(new LocalStrategy({
         }
         return done(null, user);
     }).error(function (error) {
-        done(error);
-    });
+            done(error);
+        });
 }));
 
 passport.serializeUser(function(user, done) {
@@ -30,8 +30,15 @@ passport.deserializeUser(function(id, done) {
     User.find({where: {userID: id}}).success(function (user) {
         done(null, user);
     }).error(function (error) {
-        done(error);
-    });
+            done(error);
+        });
 });
 
-module.exports = passport;
+module.exports = function (app, config, container) {
+    var models = container.require('app:models');
+    User = models.User;
+
+    app.use(passport.initialize());
+    app.use(passport.session());
+    return passport;
+};

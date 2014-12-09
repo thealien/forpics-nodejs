@@ -1,7 +1,5 @@
 'use strict';
 
-var instance = null;
-
 function Validator (options) {
     this.maxHeight = options.maxHeight || this.maxHeight;
     this.maxWidth = options.maxWidth || this.maxWidth;
@@ -46,11 +44,4 @@ Validator.prototype.validateDimensions = function (dimensions) {
     return error;
 };
 
-exports.create = function (options) {
-    instance = new Validator(options);
-    return instance;
-};
-
-exports.getInstance = function () {
-    return instance;
-};
+module.exports = Validator;

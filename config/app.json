@@ -1,0 +1,17 @@
+{
+    "session" : {
+        "cookie": {
+            "maxAge": 31536000000
+        },
+        "secret": "hammer-time",
+        "storage": {
+            "type": "redis",
+            "options": {}
+        }
+    },
+
+    "paths" : {
+        "images": "i",
+        "previews": "p"
+    }
+}

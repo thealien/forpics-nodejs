@@ -1,0 +1,16 @@
+{% for message in messages %}
+    <h2>{{message}}</h2>
+{% endfor %}
+
+<form method="POST" action="">
+    <p class="label">Логин</p>
+    <p><input required type="text" value="{{username}}" name="username" title="Укажите имя пользователя" size="50" maxlength="50"></p>
+    <br>
+
+    <p class="label">Пароль</p>
+    <p><input required type="password" value="{{password}}" name="password" title="Укажите ваш пароль" size="50" maxlength="50"></p>
+    <br>
+    <p><input type="submit" value="Войти" name="loginbtn"></p> <br>
+
+    <p> Первый раз у нас? &mdash; <a href="/user/register/">зарегистрируйтесь!</a></p>
+</form>

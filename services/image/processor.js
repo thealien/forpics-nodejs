@@ -211,8 +211,8 @@ function generateFilename(max){
     return guid.substr(0, utils.rand(7, max));
 }
 
-exports.Processor = Processor;
-
-exports.create = function (config) {
+Processor.create = function (config) {
     return new Processor(config);
 };
+
+module.exports = Processor;
