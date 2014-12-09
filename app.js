@@ -10,7 +10,7 @@ var port        = process.env.PORT || 3000;
 require('./boot')(app, config, container);
 
 // routing
-require('./routes')(app, config);
+require('./routes')(app, config, container);
 
 app.listen(port, function() {
     console.log('Express server listening on port ' + port);

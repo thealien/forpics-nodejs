@@ -5,7 +5,7 @@ var services = require('smallbox'),
     Sequelize = require('sequelize');
 
 module.exports = function (app, config/*, container*/) {
-    var dbConfig = services.require('app:config').db;
+    var dbConfig = config.db;
 
     var db = new Sequelize(dbConfig.database, dbConfig.user, dbConfig.password, {
         host: dbConfig.host,

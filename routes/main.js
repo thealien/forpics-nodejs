@@ -29,7 +29,7 @@ module.exports = function (router, config, container) {
     /**
      * Upload from web | Upload from windows-client
      */
-    router.post('/(up|upload)', function(req, res) {
+    router.post(/(up|upload)/, function(req, res) {
         handleUpload(req,  res, function (error, processedImages, rejectedImages) {
             // TODO
             console.log(error, processedImages, rejectedImages);
