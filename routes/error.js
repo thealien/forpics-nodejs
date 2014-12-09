@@ -15,7 +15,7 @@ module.exports = function (router, config, container) {
     // development error handler
     // will print stacktrace
     if (app.get('env') === 'development') {
-        app.use(function(err, req, res/*, next*/) {
+        router.use(function(err, req, res/*, next*/) {
             res.status(err.status || 500);
             res.render('error', {
                 message: err.message,

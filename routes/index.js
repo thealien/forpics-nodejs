@@ -38,4 +38,5 @@ module.exports = function (app, config, container) {
     routes.admin(router, config, container);
     routes.user(router, config, container);
     routes.error(router, config, container);
+    app.use(router);
 };

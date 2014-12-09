@@ -10,14 +10,14 @@ var bodyParser      = require('body-parser');
 var multer          = require('multer');
 var flash           = require('connect-flash');
 var swig            = require('swig');
+var viewHelpers     = require('../views/helpers');
 
 module.exports = function (app, config) {
-
     // view engine setup
-    swig.setFilter('fileSize',require('../views/helpers.js').fileSize);
+    swig.setFilter('fileSize', viewHelpers.fileSize);
     swig.setDefaults({ cache: false });
     app.engine('html', swig.renderFile);
-    app.set('views', path.join(__dirname, 'views'));
+    app.set('views', path.join(__dirname, '../views'));
     app.set('view engine', 'html');
 
     // logging
@@ -38,7 +38,7 @@ module.exports = function (app, config) {
 
     app.use(flash());
 
-    app.use(express.static(path.join(__dirname, 'public')));
+    app.use(express.static(path.join(__dirname, '../public')));
 
     app.use(multer(config.multer));
 
