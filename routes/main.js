@@ -4,6 +4,7 @@ var async =require('async'),
     fs = require('fs'),
     imagesize = require('image-size'),
     utils = require('../utils'),
+    util = require('util'),
     models,
     uploadConfig,
     validator,
@@ -12,6 +13,7 @@ var async =require('async'),
 var filesFieldname = 'uploadfile[]';
 
 module.exports = function (router, config, container) {
+    var app = container.require('app:core');
     models = container.require('app:models');
     uploadConfig = config.imageProcess;
     validator = container.require('image:validator');
@@ -29,7 +31,7 @@ module.exports = function (router, config, container) {
     /**
      * Upload from web | Upload from windows-client
      */
-    router.post(/(up|upload)/, function(req, res) {
+    router.post('/up', function(req, res) {
         handleUpload(req,  res, function (error, processedImages, rejectedImages) {
             // TODO
             console.log(error, processedImages, rejectedImages);
@@ -52,29 +54,30 @@ module.exports = function (router, config, container) {
     });
 
 
-    /* TODO | return me
-    router.post('/(upload)', function(req, res) {
+    router.post('/upload', function(req, res) {
         handleUpload(req,  res, function (error, processedImages, rejectedImages) {
             var type;
             if (error) {
                 res.send(500, 'Internal Server Error');
                 return;
             }
-
-            type = req.get('json') ? 'json' : 'json';
+            res.locals = app.locals;
+            type = req.get('json') ? 'json' : 'xml';
             switch (type) {
                 case 'json':
                     sendJsonResponse(res, error, processedImages, rejectedImages);
                     break;
+
                 case 'xml':
                     sendXmlResponse(res, error, processedImages, rejectedImages);
+                    break;
+
                 default:
                     res.send(418, "I'm a teapot");
                     break;
             }
         });
     });
-    */
 
 };
 
@@ -246,34 +249,45 @@ function deleteRejectedImages (images) {
     });
 }
 
-    function sendXmlResponse (res, error, processedImages, rejectedImages) {
+function sendXmlResponse (res, error, processedImages, rejectedImages) {
     res.type('xml');
     res.render('images/view.xml.html', {
         layout: false,
-        globals: {
-            paths: {
-                images: 'i',
-                previews: 'p'
-            }
-        },
         processedImages: processedImages,
         rejectedImages: rejectedImages
     });
 }
 
 function sendJsonResponse (res, error, processedImages, rejectedImages) {
-    res.type('json');
-    res.render('images/view.xml.html', {
-        layout: false,
-        globals: {
-            baseUrl: 'http://mysite.com',
-            paths: {
-                images: 'i',
-                previews: 'p'
-            }
-        },
-        processedImages: processedImages,
-        rejectedImages: rejectedImages
+    var result = [],
+        locals = res.locals,
+        baseUrl = locals.baseUrl,
+        paths = locals.paths;
+
+    (rejectedImages || []).forEach(function (image) {
+        if (image.error) {
+            result.push(image.error.message);
+        }
+    });
+
+    (processedImages || []).forEach(function (image) {
+        var item = {
+            url: [baseUrl, paths.images, image.path_date, image.filename].join('/'),
+            delurl: [baseUrl, 'delete', image.path_date, image.deleteGuid].join('/'),
+            width: image.width,
+            height: image.height,
+            size: image.size,
+            preview_url: image.psize ? [baseUrl, paths.previews, image.path_date, image.filename].join('/') : '',
+            pwidth: image.pwidth || '',
+            pheight: image.pheight || '',
+            psize: image.psize || ''
+        };
+
+        result.push(item);
+    });
+
+    res.jsonp({
+        files: result
     });
 }
 

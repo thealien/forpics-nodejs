@@ -13,6 +13,7 @@ var swig            = require('swig');
 var viewHelpers     = require('../views/helpers');
 
 module.exports = function (app, config) {
+
     // view engine setup
     swig.setFilter('fileSize', viewHelpers.fileSize);
     swig.setDefaults({ cache: false });
