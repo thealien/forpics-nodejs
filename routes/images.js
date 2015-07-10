@@ -15,15 +15,13 @@ module.exports = function (router, config, container) {
         Image.find({where: {
             path_date: path_date,
             guid: guid
-        }}).success(function (image) {
+        }}).then(function (image) {
             if (!image) {
-                return res.send(404, 'Not found');
+                return res.status(404).send('Not found');
             }
             res.render('images/view', {
                 images: [image]
             });
-        }).error(function (error) {
-            next(error);
         });
     });
 
@@ -41,7 +39,7 @@ module.exports = function (router, config, container) {
             group: guid
         }}).success(function (images) {
                 if (!images) {
-                    return res.send(404, 'Not found');
+                    return res.status(404).send('Not found');
                 }
                 res.render('images/view', {
                     images: images

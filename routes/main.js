@@ -58,7 +58,7 @@ module.exports = function (router, config, container) {
         handleUpload(req,  res, function (error, processedImages, rejectedImages) {
             var type;
             if (error) {
-                res.send(500, 'Internal Server Error');
+                res.status(500).send('Internal Server Error');
                 return;
             }
             res.locals = app.locals;
@@ -73,7 +73,7 @@ module.exports = function (router, config, container) {
                     break;
 
                 default:
-                    res.send(418, "I'm a teapot");
+                    res.status(418).send("I'm a teapot");
                     break;
             }
         });
