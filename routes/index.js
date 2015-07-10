@@ -9,24 +9,19 @@ var routes = {
     error:  require('./error')
 };
 
-// param handlers
-router.param(function(name, fn){
-    var res;
-    if (fn instanceof RegExp) {
-        res = function(req, res, next, val){
-            var captures;
-            if ((captures = fn.exec(String(val)))) {
-                req.params[name] = captures;
-                next();
-            } else {
-                next('route');
-            }
-        };
-    }
-    return res;
-});
-router.param('path_date', /^[0-9]{8}$/);
-router.param('guid', /^\w+$/);
+var regexParam = function (re) {
+    return function(req, res, next, val, name){
+        var captures;
+        if ((captures = re.exec(String(val)))) {
+            req.params[name] = captures[0];
+            next();
+        } else {
+            next('route');
+        }
+    };
+};
+router.param('path_date', regexParam(/^[0-9]{8}$/));
+router.param('guid', regexParam(/^\w+$/));
 router.param('page', function (req, res, next) {
     req.params.page = Math.max(+req.params.page || 1, 1);
     next();

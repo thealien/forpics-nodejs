@@ -16,15 +16,15 @@ module.exports = function (router, config, container) {
             path_date: path_date,
             guid: guid
         }}).success(function (image) {
-                if (!image) {
-                    return res.send(404, 'Not found');
-                }
-                res.render('images/view', {
-                    images: [image]
-                });
-            }).error(function (error) {
-                next(error);
+            if (!image) {
+                return res.send(404, 'Not found');
+            }
+            res.render('images/view', {
+                images: [image]
             });
+        }).error(function (error) {
+            next(error);
+        });
     });
 
 

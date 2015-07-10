@@ -34,7 +34,9 @@ module.exports = function (app, config) {
     app.use(session({
         secret: sessionConfig.secret,
         store:new RedisStore({prefix:'forpics_sess'}),
-        cookie: sessionConfig.cookie
+        cookie: sessionConfig.cookie,
+        resave: false, // TODO check docs
+        saveUninitialized: false // TODO check docs
     }));
 
     app.use(flash());
