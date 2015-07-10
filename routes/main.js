@@ -237,9 +237,12 @@ function saveImageRecord (data, meta, callback) {
         ip: meta.ip,
         uploaduserid: meta.userId
     });
-    image.save().success(function (result) {
-        callback(null, result);
-    }).error(callback);
+    image
+        .save()
+        .then(function (result) {
+            callback(null, result);
+        })
+        .catch(callback);
 }
 
 function deleteRejectedImages (images) {
