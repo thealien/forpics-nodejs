@@ -143,16 +143,29 @@ module.exports = function (app, config/*, container*/) {
             unique:     true,
             type: Sequelize.STRING(50),
             allowNull:      false,
-            notEmpty: true
+            notEmpty: true,
+            validate: {
+                isUnique: function (username, done) {
+                    username = String(username).trim();
+                    User.find({ where: {username: username}, attributes: ['userID']})
+                        .then(function (record) {
+                            var error = record ? new Error('Username уже занят') : null;
+                            done(error);
+                        })
+                        .catch(done);
+                }
+            }
         },
 
         // `password` varchar(100) DEFAULT NULL
         password: {
             type: Sequelize.STRING(50),
             allowNull:      false,
-            notEmpty: true,
             set: function(password) {
-                return utils.md5(password);
+                this.setDataValue('password', utils.md5(password));
+            },
+            validate: {
+                notEmpty: true
             }
         },
 
@@ -161,12 +174,26 @@ module.exports = function (app, config/*, container*/) {
             type: Sequelize.STRING,
             allowNull:      false,
             unique: true,
-            isEmail: true
+            validate: {
+                isEmail: {
+                    msg: 'Email имеет неверный формат'
+                },
+                isUnique: function (email, done) {
+                    email = String(email).trim();
+                    User.find({ where: {email: email}, attributes: ['userID']})
+                        .then(function (record) {
+                            var error = record ? new Error('Email уже занят') : null;
+                            done(error);
+                        })
+                        .catch(done);
+                }
+            }
         },
 
         // `role` enum('admin','user') NOT NULL DEFAULT 'user',
         role: {
             type: Sequelize.ENUM('admin', 'user'),
+            defaultValue: 'user',
             allowNull:      false
         },
 

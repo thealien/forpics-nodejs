@@ -12,20 +12,38 @@ module.exports = function (router, config, container) {
     router.route('/user/register')
         .post(function (req, res, next) {
             var user,
-                body = req.body;
+                body = req.body,
+                messages = [];
 
             user = User.build({
                 email: body.email,
                 username: body.username,
                 password: body.password
             });
-            user.save().success(function (user) {
-                req.logIn(user, function(error) {
-                    return error ? next(error) : res.redirect('/');
+
+            user.validate().then(function (result) {
+                result.errors.forEach(function (error) {
+                    messages.push(error.message);
                 });
-            }).error(function (error) {
-                    return next(error);
-                });
+
+                if (messages.length) {
+                    req.body.messages = messages;
+                    return res.render('user/register', req.body);
+                } else {
+                    user.save()
+                        .then(function (user) {
+                             req.logIn(user, function(error) {
+                             return error ? next(error) : res.redirect('/');
+                             });
+                         })
+                        .catch(function (error) {
+                            req.body.messages = [
+                                'Не удалось зарегистрироваться. Попробуйте позже.'
+                            ];
+                            res.render('user/register', req.body);
+                        });
+                }
+            });
         })
         .all(function(req, res) {
             res.render('user/register', req.body);
