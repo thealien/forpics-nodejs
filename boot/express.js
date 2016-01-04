@@ -35,7 +35,7 @@ module.exports = function (app, config) {
     app.use(session({
         secret: sessionConfig.secret,
         store: new FileStore({
-            path: '../../runtime/sessions',
+            path: './runtime/sessions',
             encrypt: true
         }),
         cookie: sessionConfig.cookie,

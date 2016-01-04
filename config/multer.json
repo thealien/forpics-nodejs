@@ -1,5 +1,7 @@
 {
     "dest": "./uploads/",
-    "files": 30,
-    "fields": 10
+    "limits": {
+        "files": 30,
+        "fields": 10
+    }
 }

@@ -8,7 +8,7 @@ passport.use(new LocalStrategy({
     usernameField: 'username',
     passwordField: 'password'
 }, function(username, password, done){
-    User.find({ where: { username: username }}).success(function(user){
+    User.find({ where: { username: username }}).then(function(user){
         if (!user) {
             return done(null, false, { error: 'Incorrect username.' });
         }
@@ -16,7 +16,7 @@ passport.use(new LocalStrategy({
             return done(null, false, { error: 'Incorrect password.' });
         }
         return done(null, user);
-    }).error(function (error) {
+    }).catch(function (error) {
         done(error);
     });
 }));
@@ -27,9 +27,9 @@ passport.serializeUser(function(user, done) {
 
 
 passport.deserializeUser(function(id, done) {
-    User.find({where: {userID: id}}).success(function (user) {
+    User.find({where: {userID: id}}).then(function (user) {
         done(null, user);
-    }).error(function (error) {
+    }).catch(function (error) {
         done(error);
     });
 });
