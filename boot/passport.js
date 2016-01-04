@@ -40,5 +40,11 @@ module.exports = function (app, config, container) {
 
     app.use(passport.initialize());
     app.use(passport.session());
+
+    app.use(function (req, res, next) {
+        app.locals.user = req.user;
+        next();
+    });
+
     return passport;
 };

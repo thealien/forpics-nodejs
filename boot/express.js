@@ -50,10 +50,6 @@ module.exports = function (app, config) {
         app.locals.baseUrl = req.protocol + '://' + req.headers.host;
         next();
     });
-    app.use(function (req, res, next) {
-        app.locals.user = req.user;
-        next();
-    });
 
     return app;
 

@@ -180,6 +180,9 @@ module.exports = function (app, config/*, container*/) {
         instanceMethods: {
             samePassword: function (password) {
                 return this.password === utils.md5(password);
+            },
+            isAdmin: function () {
+                return this.role === 'admin';
             }
         }
     });
