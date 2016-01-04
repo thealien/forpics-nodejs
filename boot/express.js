@@ -5,7 +5,7 @@ var express         = require('express');
 var logger          = require('morgan');
 var cookieParser    = require('cookie-parser');
 var session         = require('express-session');
-var RedisStore      = require('connect-redis')(session);
+var FileStore       = require('session-file-store')(session);
 var bodyParser      = require('body-parser');
 var multer          = require('multer');
 var flash           = require('connect-flash');
@@ -33,7 +33,10 @@ module.exports = function (app, config) {
     var sessionConfig = config.app.session;
     app.use(session({
         secret: sessionConfig.secret,
-        store:new RedisStore({prefix:'forpics_sess'}),
+        store: new FileStore({
+            path: '../../runtime/sessions',
+            encrypt: true
+        }),
         cookie: sessionConfig.cookie,
         resave: false, // TODO check docs
         saveUninitialized: false // TODO check docs

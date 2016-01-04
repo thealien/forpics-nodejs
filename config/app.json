@@ -3,11 +3,7 @@
         "cookie": {
             "maxAge": 31536000000
         },
-        "secret": "hammer-time",
-        "storage": {
-            "type": "redis",
-            "options": {}
-        }
+        "secret": "hammer-time"
     },
 
     "paths" : {
