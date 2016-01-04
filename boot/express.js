@@ -8,6 +8,7 @@ var session         = require('express-session');
 var FileStore       = require('session-file-store')(session);
 var bodyParser      = require('body-parser');
 var multer          = require('multer');
+var upload          = multer({ dest: 'uploads/' });
 var flash           = require('connect-flash');
 var swig            = require('swig');
 var viewHelpers     = require('../views/helpers');
@@ -46,8 +47,7 @@ module.exports = function (app, config) {
 
     app.use(express.static(path.join(__dirname, '../public')));
 
-    app.use(multer(config.multer));
-
+    app.use(upload.any()); // TODO replace "any" with better implementation
 
     // setup some "locals"
     app.locals.paths = config.app.paths;
