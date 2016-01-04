@@ -15,16 +15,16 @@ module.exports = function (router, config, container) {
         Image.find({where: {
             path_date: path_date,
             guid: guid
-        }}).success(function (image) {
-                if (!image) {
-                    return res.send(404, 'Not found');
-                }
-                res.render('images/view', {
-                    images: [image]
-                });
-            }).error(function (error) {
-                next(error);
+        }}).then(function (image) {
+            if (!image) {
+                return res.status(404).send('Not found');
+            }
+            res.render('images/view', {
+                images: [image]
             });
+        }).catch(function (error) {
+            next(error);
+        });
     });
 
 
@@ -39,16 +39,16 @@ module.exports = function (router, config, container) {
         Image.findAll({ where: {
             path_date: path_date,
             group: guid
-        }}).success(function (images) {
-                if (!images) {
-                    return res.send(404, 'Not found');
-                }
-                res.render('images/view', {
-                    images: images
-                });
-            }).error(function (error) {
-                next(error);
+        }}).then(function (images) {
+            if (!images) {
+                return res.status(404).send('Not found');
+            }
+            res.render('images/view', {
+                images: images
             });
+        }).catch(function (error) {
+            next(error);
+        });
     });
 
 

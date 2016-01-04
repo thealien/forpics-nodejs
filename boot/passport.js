@@ -17,8 +17,8 @@ passport.use(new LocalStrategy({
         }
         return done(null, user);
     }).error(function (error) {
-            done(error);
-        });
+        done(error);
+    });
 }));
 
 passport.serializeUser(function(user, done) {
@@ -30,8 +30,8 @@ passport.deserializeUser(function(id, done) {
     User.find({where: {userID: id}}).success(function (user) {
         done(null, user);
     }).error(function (error) {
-            done(error);
-        });
+        done(error);
+    });
 });
 
 module.exports = function (app, config, container) {
@@ -40,5 +40,11 @@ module.exports = function (app, config, container) {
 
     app.use(passport.initialize());
     app.use(passport.session());
+
+    app.use(function (req, res, next) {
+        app.locals.user = req.user;
+        next();
+    });
+
     return passport;
 };

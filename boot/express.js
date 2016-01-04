@@ -5,9 +5,10 @@ var express         = require('express');
 var logger          = require('morgan');
 var cookieParser    = require('cookie-parser');
 var session         = require('express-session');
-var RedisStore      = require('connect-redis')(session);
+var FileStore       = require('session-file-store')(session);
 var bodyParser      = require('body-parser');
 var multer          = require('multer');
+var upload          = multer({ dest: 'uploads/' });
 var flash           = require('connect-flash');
 var swig            = require('swig');
 var viewHelpers     = require('../views/helpers');
@@ -33,25 +34,25 @@ module.exports = function (app, config) {
     var sessionConfig = config.app.session;
     app.use(session({
         secret: sessionConfig.secret,
-        store:new RedisStore({prefix:'forpics_sess'}),
-        cookie: sessionConfig.cookie
+        store: new FileStore({
+            path: '../../runtime/sessions',
+            encrypt: true
+        }),
+        cookie: sessionConfig.cookie,
+        resave: false, // TODO check docs
+        saveUninitialized: false // TODO check docs
     }));
 
     app.use(flash());
 
     app.use(express.static(path.join(__dirname, '../public')));
 
-    app.use(multer(config.multer));
-
+    app.use(upload.any()); // TODO replace "any" with better implementation
 
     // setup some "locals"
     app.locals.paths = config.app.paths;
     app.use(function (req, res, next) {
         app.locals.baseUrl = req.protocol + '://' + req.headers.host;
-        next();
-    });
-    app.use(function (req, res, next) {
-        app.locals.user = req.user;
         next();
     });
 
