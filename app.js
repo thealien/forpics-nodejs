@@ -6,6 +6,8 @@ var container   = require('smallbox');
 var app         = express();
 var port        = process.env.PORT || 3000;
 
+app.isProd = (app.get('env') !== 'development');
+
 // boot
 require('./boot')(app, config, container);
 
