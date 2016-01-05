@@ -1,7 +1,8 @@
 'use strict';
 
 module.exports = function (router, config, container) {
-    var app = container.require('app:core');
+    var app = container.require('app:core'),
+        logger = container.require('app:logger');
 
     // error handlers
 
@@ -12,10 +13,12 @@ module.exports = function (router, config, container) {
         next(err);
     });
 
+
     // development error handler
     // will print stacktrace
     if (app.get('env') === 'development') {
-        router.use(function(err, req, res/*, next*/) {
+        router.use(function(err, req, res, next) {
+            logger.error(err);
             res.status(err.status || 500);
             res.render('error', {
                 message: err.message,
@@ -26,7 +29,8 @@ module.exports = function (router, config, container) {
 
     // production error handler
     // no stacktraces leaked to user
-    router.use(function(err, req, res/*, next*/) {
+    router.use(function(err, req, res, next) {
+        logger.error(err);
         res.status(err.status || 500);
         res.render('error', {
             message: err.message,

@@ -2,7 +2,7 @@
 
 var path            = require('path');
 var express         = require('express');
-var logger          = require('morgan');
+var morgan          = require('morgan');
 var cookieParser    = require('cookie-parser');
 var session         = require('express-session');
 var FileStore       = require('session-file-store')(session);
@@ -22,8 +22,7 @@ module.exports = function (app, config) {
     app.set('views', path.join(__dirname, '../views'));
     app.set('view engine', 'html');
 
-    // logging
-    app.use(logger('dev'));
+    app.use(morgan('dev'));
 
     // forms handling
     app.use(bodyParser.json());
