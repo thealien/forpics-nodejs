@@ -1,0 +1,22 @@
+[
+  {
+    "type": "File",
+    "name": "file#info",
+    "timestamp": true,
+    "json": false,
+    "filename": "./runtime/logs/info.log",
+    "maxsize": 102400,
+    "maxFiles": 10,
+    "level": "info"
+  },
+  {
+    "type": "File",
+    "name": "file#error",
+    "timestamp": true,
+    "json": false,
+    "maxsize": 102400,
+    "maxFiles": 10,
+    "filename": "./runtime/logs/error.log",
+    "level": "error"
+  }
+]
