@@ -2,7 +2,7 @@
     "image": {
         "max_width": 10000,
         "max_height": 10000,
-        "max_size": 3145728,
+        "max_size": 5242880,
         "allowed_ext": [
             "jpg", "jpeg", "gif", "png"
         ],

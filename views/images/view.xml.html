@@ -2,7 +2,7 @@
 <imagehost>
     {% for image in rejectedImages -%}
     <file>
-        <error>{{image.file.originalname|e}}: {{image.error.message|e}}</error>
+        <error>{{image.file.originalname|e}}: {{image.error.message|tr|e}}</error>
     </file>
     {%- endfor %}
     {% for image in processedImages -%}

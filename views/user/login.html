@@ -1,14 +1,14 @@
-{% extends "../layout/main.html" %}
+{% extends '../layout.html' %}
 
 {% block center %}
-<center><h1>Вход на сайт<h1></center>
-<div class='forms' id='center' style='width: 380px'>
+<center><h1>Вход на сайт</h1></center>
+<div class='forms' id='center'>
 
     {% for message in messages %}
         <h2>{{message}}</h2>
     {% endfor %}
 
-    <form method="POST" action="">
+    <form method="POST" action="" class="login">
         <p class="label">Логин</p>
         <p><input required type="text" value="{{username}}" name="username" title="Укажите имя пользователя" size="50" maxlength="50"></p>
         <br>

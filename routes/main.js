@@ -180,7 +180,7 @@ function handleUpload (req, res, callback) {
     steps.push(function (callback) {
         var meta = {
             ip: req.ip,
-            userId: res.user ? res.user.id : 0,
+            userId: req.user ? req.user.userID : 0,
             useragent: resolveUseragentId(req.get('User-Agent'))
         };
         async.each(processedImages, function (image, callback) {
@@ -248,6 +248,7 @@ function saveImageRecord (data, meta, callback) {
         ip: meta.ip,
         uploaduserid: meta.userId
     });
+
     image
         .save()
         .then(function (result) {

@@ -283,6 +283,10 @@ div.hr{
     color: gray;
 }
 
+form.login {
+    margin: 20px;
+}
+
 /* меню в шапке */
 #head-menu {
     padding: 0;

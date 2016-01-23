@@ -1,6 +1,10 @@
 'use strict';
 
+var fs = require('fs'),
+    util = require('util');
+
 module.exports = function (router, config, container) {
+    var processor = container.require('image:processor');
     var models = container.require('app:models');
     var Image = models.Image;
 
@@ -60,16 +64,49 @@ module.exports = function (router, config, container) {
      * Delete image
      */
     router.route('/delete/:path_date/:guid')
-        .post(function (/*res, req*/) {
+        .post(function (req, res) {
+            var params = req.params,
+                path_date = params.path_date,
+                guid = params.guid;
 
+            Image.find({ where: {
+                path_date: path_date,
+                deleteGuid: guid
+            }}).then(function (image) {
+                if (!image) {
+                    return res.status(404).send('Not found');
+                }
+
+                processor.delete(image, function () {
+                    image.destroy().then(function () {
+                        res.redirect('/my/');
+                    }).catch(function (error) {
+                        next(error);
+                    });
+                });
+
+            }).catch(function (error) {
+                next(error);
+            });
         })
         .get(function(req, res) {
             var params = req.params,
                 path_date = params.path_date,
                 guid = params.guid;
 
-            res.render('images/delete', {
+            Image.find({ where: {
+                path_date: path_date,
+                deleteGuid: guid
+            }}).then(function (image) {
+                if (!image) {
+                    return res.status(404).send('Not found');
+                }
 
+                res.render('images/delete', {
+                    image: image,
+                });
+            }).catch(function (error) {
+                next(error);
             });
         });
 };

@@ -108,10 +108,11 @@ module.exports = function (router, config, container) {
             res.redirect('/');
         }
     }).get('/my/:page?', function(req, res) {
+
         var limit = 18,
             page = Math.max(req.params.page || 1, 1),
             offset = (page-1) * limit,
-            userId = req.user.id,
+            userId = req.user.userID,
             where = {
                 uploaduserid: userId
             };

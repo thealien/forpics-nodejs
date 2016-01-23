@@ -142,6 +142,24 @@ Processor.prototype.process = function (image, options, callback) {
     });
 };
 
+Processor.prototype.delete = function (image, callback) {
+    var filename = image.filename,
+        datePath = image.path_date,
+        iPath, pPath,
+        pathConfig = this.config.path;
+
+    iPath = pathConfig.image + '/' + datePath;
+    pPath = pathConfig.preview + '/' + datePath;
+
+    async.parallel([function (callback) {
+        fs.unlink(iPath + '/' + filename, callback)
+    }, function (callback) {
+        fs.unlink(pPath + '/' + filename, callback);
+    }],function () {
+        callback()
+    });
+};
+
 /**
  *
  * @param {Object} options

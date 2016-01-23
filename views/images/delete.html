@@ -9,15 +9,17 @@
 {% block content %}
 
 <div class='detail group'>
-    <a href='/{{ Yii.params.dirs.path_images }}/{{ image.path_date }}/{{ image.filename }}' target='_blank' class='poster_link'>
+
+    <a href='/{{paths.images}}/{{image.path_date}}/{{image.filename}}' target='_blank' class='poster_link'>
         {% if image.preview %}
-        <img class='image' src='/{{ Yii.params.dirs.path_preview }}/{{ image.path_date }}/{{ image.filename }}' alt=''>
+        <img class='image' src='/{{paths.previews}}/{{image.path_date}}/{{image.filename}}' alt=''>
         {% else %}
-        <img class='image' src='/{{ Yii.params.dirs.path_images }}/{{ image.path_date }}/{{ image.filename }}' alt=''>
+        <img class='image' src='/{{paths.images}}/{{image.path_date}}/{{image.filename}}' alt=''>
         {% endif %}
         <br>
-        {{ image. width }} x {{ image.height }}, {{ image.filesize|format_filesize }}
+        {{image.width}} x {{image.height}}, {{image.filesize|fileSize}}
     </a>
+
     <div class='codes' style="text-align: center;">
         <h3>Подтверждение удаления картинки</h3>
         <form action="" method="post">
@@ -25,7 +27,7 @@
             &nbsp;
             или
             &nbsp;
-            <a href='{{ this.createUrl("main/view", {"path_date":image.path_date, "guid":image.guid }) }}'>вернуться назад</a>
+            <a href='/image/{{ image.path_date }}/{{ image.guid }}'>вернуться назад</a>
         </form>
     </div>
     <div class='clear'></div>

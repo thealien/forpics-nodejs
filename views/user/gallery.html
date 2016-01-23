@@ -1,4 +1,4 @@
-{% extends "views/layouts/main.html" %}
+{% extends '../layout.html' %}
 
 {% block add_css %}
 <!--[if lte IE 7]>
@@ -21,27 +21,29 @@
 <div id='center' class='forms' style='width: 870px;'>
     <div class='my' style='margin-right: -18px;'>
 
-        {% for image in images%}
-        <div class="image">
-            <a href='/image/{{ image.path_date }}/{{ image.guid }}' class='poster_link'>
-                {% if image.preview %}
-                <img class='image' src='/{{ Yii.params.dirs.path_preview }}/{{ image.path_date }}/{{ image.filename }}' alt=''>
-                {% else %}
-                <img class='image' src='/{{ Yii.params.dirs.path_images }}/{{ image.path_date }}/{{ image.filename }}' alt=''>
-                {% endif %}
-            </a>
-            <br>
-            <a href='/{{ Yii.params.dirs.path_images }}/{{ image.path_date }}/{{ image.filename }}' target='_blank' class='poster_link'>
-                {{ image. width }} x {{ image.height }}, {{ image.filesize|format_filesize }}
-            </a>
-        </div>
+        {% if images.length %}
+            {% for image in images%}
+            <div class="image">
+                <a href='/image/{{ image.path_date }}/{{ image.guid }}' class='poster_link'>
+                    {% if image.preview %}
+                    <img class='image' src='/{{paths.previews}}/{{image.path_date}}/{{image.filename}}' alt=''>
+                    {% else %}
+                    <img class='image' src='/{{paths.images}}/{{image.path_date}}/{{image.filename}}' alt=''>
+                    {% endif %}
+                </a>
+                <br>
+                <a href='{{baseUrl}}/{{paths.previews}}/{{image.path_date}}/{{image.filename}}' target='_blank' class='poster_link'>
+                    {{image.width}} x {{image.height}}, {{image.filesize|fileSize}}
+                </a>
+            </div>
+            {% endfor %}
         {% else %}
         У вас нет залитых картинок
-        {% endfor %}
+        {% endif %}
     </div>
     <br>
     <div class="paginator">
-        {{ this.widget("CLinkPager", {"pages":pages}, true) }}
+        {{ pagination.render() }}
     </div>
 </div>
 {% endblock %}

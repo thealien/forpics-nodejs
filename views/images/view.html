@@ -9,10 +9,7 @@
 {% block add_js %}
 <script type='application/javascript'>
     $(function(){
-        $('div.codes input.text').bind('focus click mouseover', function(){
-            this.select(0,0);
-        });
-        $('p.group-title>input').bind('focus click mouseover', function(){
+        $('div.codes input.text,p.group-title>input').bind('focus click mouseover', function(){
             this.select(0,0);
         });
     });
@@ -58,7 +55,7 @@
             <input  class='text' value='[url={{baseUrl}}/{{paths.images}}/{{image.path_date}}/{{image.filename}}][img]{{baseUrl}}/{{paths.previews}}/{{image.path_date}}/{{image.filename}}}[/img][/url]' readonly="readonly">
         </div>
         {% endif %}
-        {% if user && (user.id == image.uploaduserid) %}
+        {% if user && (user.userID == image.uploaduserid) %}
         <div>
             <b>Адрес удаления картинки:</b>
             <br>
