@@ -11,7 +11,7 @@
     </title>
     {% block add_meta %}
     {% endblock %}
-    <link href="/css/style.css?20111002" rel="stylesheet" type="text/css">
+    <link href="/css/style{% if IS_PROD %}.min{% endif %}.css" rel="stylesheet" type="text/css">
     {% block add_css %}
     {% endblock %}
 </head>
