@@ -81,8 +81,6 @@ module.exports = function (router, config, container) {
             var body = req.body,
                 messages = req.flash();
 
-            console.log(messages);
-
             res.render('user/login', {
                 username: body.username,
                 password: body.password,

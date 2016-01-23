@@ -1,0 +1,10 @@
+{% if rejectedImages.length %}
+Во время загрузки произошли ошибки:
+<p class='message'>
+    {% for image in rejectedImages %}
+    <b>{{ loop.index }}.</b> {{ image.file.originalname|e }} - {{ image.error|tr|e }}
+    {% if not loop.last%}<br>{% endif %}
+    {% endfor %}
+</p>
+<div class='hr'></div>
+{% endif %}

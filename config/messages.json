@@ -1,0 +1,6 @@
+{
+  "validation.error.unsupported_image_type": "Неподдерживаемый тип файла",
+  "validation.error.filesize_too_large": "Размер файла слишком большой",
+  "validation.error.width_too_large": "Ширина изображения слишком большая",
+  "validation.error.height_too_large": "Высота изображения слишком большая"
+}

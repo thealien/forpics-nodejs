@@ -21,7 +21,8 @@ module.exports = function (router, config, container) {
             }
 
             res.render('images/view', {
-                images: [image]
+                images: [image],
+                messages: req.flash()
             });
         }).catch(function (error) {
             next(error);
@@ -46,7 +47,8 @@ module.exports = function (router, config, container) {
             }
 
             res.render('images/view', {
-                images: images
+                images: images,
+                messages: req.flash()
             });
         }).catch(function (error) {
             next(error);

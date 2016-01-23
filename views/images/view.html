@@ -20,7 +20,11 @@
 {% endblock %}
 
 {% block content %}
-{% include '../snippet/messages.html' %}
+
+{% if messages.rejectedImages %}
+    {% include '../snippet/rejected-images.html' with messages only %}
+{% endif %}
+
 {% if images[0].group and images[1] %}
 <p class='group-title'>
     <b>Адрес группы картинок:</b>

@@ -25,37 +25,46 @@ module.exports = function (router, config, container) {
      * Main page
      */
     router.get('/', function(req, res) {
-        res.render('main/index', { title: 'Main page' });
+        res.render('main/index', {
+            title: 'Main page',
+            messages: req.flash()
+        });
     });
 
 
     /**
      * Upload from web | Upload from windows-client
      */
-    router.post('/up1', function(req, res) {
+    router.post('/up', function(req, res) {
         handleUpload(req,  res, function (error, processedImages, rejectedImages) {
-            // TODO
-            console.log(error, processedImages, rejectedImages);
-            var location;
+            var location,
+                firstImage;
+
+            if (rejectedImages.length) {
+                req.flash('rejectedImages', rejectedImages);
+            }
+
             switch (processedImages.length) {
                 case 0:
                     // nothing uploaded
-                    location = 'MAIN_URL';
+                    location = '/';
                     break;
                 case 1:
                     // 1 image uploaded
-                    location = 'URL_OF_IMAGE';
+                    firstImage = processedImages[0];
+                    location = util.format('/image/%s/%s',  firstImage.path_date, firstImage.guid);
                     break;
                 default:
                     // group of images uploaded
-                    location = 'URL_OF_IMAGES_GROUP';
+                    firstImage = processedImages[0];
+                    location = util.format('/images/%s/%s', firstImage.path_date, firstImage.group);
             }
             res.redirect(location);
         });
     });
 
 
-    router.post('/up', function(req, res) {
+    router.post('/upload', function(req, res) {
         handleUpload(req,  res, function (error, processedImages, rejectedImages) {
             var type;
             if (error) {

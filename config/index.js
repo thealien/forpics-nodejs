@@ -11,3 +11,5 @@ exports.multer = loader.load('multer');
 exports.imageProcess = loader.load('image-process');
 
 exports.logger = loader.load('logger');
+
+exports.messages = loader.load('messages');
