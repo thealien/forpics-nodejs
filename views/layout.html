@@ -5,17 +5,15 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="description" content="Хостинг картинок - ForPics.ru">
     <meta name="keywords" content="хостинг картинок, imagehost, forpics, фотохостинг, залить картинки бесплатно">
-    <meta name='yandex-verification' content='7c99fb65f58925cd' />
+    <meta name='yandex-verification' content='7c99fb65f58925cd'>
     <title>
         {{ title|e|default('Хостинг картинок - ForPics.ru') }}
     </title>
     {% block add_meta %}
     {% endblock %}
     <link href="/css/style.css?20111002" rel="stylesheet" type="text/css">
-    <link href="/favicon.ico" type="image/x-icon" rel="shortcut icon" >
     {% block add_css %}
     {% endblock %}
-    <script type='text/javascript' src='/js/extsrc.min.js?20110617'></script>
 </head>
 {% endblock %}
 
@@ -27,12 +25,13 @@
             <div id='header-inner'>
                 {% if user && user.isAdmin() %}
                 <a class='left' title='Перейти в Админку' class='logolink' href='/admin/'>
+                    <img src='/images/logo.png' alt='Перейти на главную'>
+                </a>
                 {% else %}
                 <a class='left' title='Перейти на главную' class='logolink' href='/'>
-                {% endif %}
-                        <img src='/images/logo.png' alt='Перейти на главную'>
+                    <img src='/images/logo.png' alt='Перейти на главную'>
                 </a>
-
+                {% endif %}
                 <ul id="head-menu">
                     {% block head_menu_items%}
                     {% block head_menu_main %}
@@ -94,7 +93,7 @@
     </div>
 </footer>
 
-<script type='text/javascript' src='/js/jquery-1.6.1.min.js?20110617'></script>
+<script type='text/javascript' src='/js/jquery-1.6.1.min.js'></script>
 {% block add_js %}
 
 {% endblock %}
