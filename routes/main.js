@@ -5,6 +5,7 @@ var async =require('async'),
     imagesize = require('image-size'),
     utils = require('../utils'),
     util = require('util'),
+    path = require('path'),
     models,
     uploadConfig,
     validator,
@@ -24,14 +25,14 @@ module.exports = function (router, config, container) {
      * Main page
      */
     router.get('/', function(req, res) {
-        res.render('index', { title: 'Main page' });
+        res.render('main/index', { title: 'Main page' });
     });
 
 
     /**
      * Upload from web | Upload from windows-client
      */
-    router.post('/up', function(req, res) {
+    router.post('/up1', function(req, res) {
         handleUpload(req,  res, function (error, processedImages, rejectedImages) {
             // TODO
             console.log(error, processedImages, rejectedImages);
@@ -54,7 +55,7 @@ module.exports = function (router, config, container) {
     });
 
 
-    router.post('/upload', function(req, res) {
+    router.post('/up', function(req, res) {
         handleUpload(req,  res, function (error, processedImages, rejectedImages) {
             var type;
             if (error) {
@@ -102,6 +103,7 @@ function handleUpload (req, res, callback) {
     steps.push(function (callback) {
         acceptedImages = receivedFiles.filter(function (image) {
             var error;
+            image.extension = image.extension || getExtension(image.originalname);
             if (image.truncated) {
                 error = new Error('File truncated');
             }
@@ -301,5 +303,9 @@ function resolveUseragentId (useragent) {
         id = 1;
     }
     return id;
+}
+
+function getExtension (filename) {
+    return path.extname(filename).replace(/^\./, '');
 }
 

@@ -1,6 +1,10 @@
 'use strict';
 
+var LinkPager = require('../views/widgets/LinkPager.js');
+
 module.exports = function (router, config, container) {
+
+    var pager = LinkPager.create(20, 10);
 
     /**
      * Admin page
@@ -19,7 +23,12 @@ module.exports = function (router, config, container) {
         .get(function(req, res) {
             var page = req.params.page || 1;
             res.render('admin', {
-                title:'Администрирование'
+                title:'Администрирование',
+                pagination: pager.build({
+                    currentPage:    page,
+                    itemsCount:     count,
+                    urlPrefix:      '/admin/'
+                })
             });
         });
 

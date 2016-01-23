@@ -19,6 +19,7 @@ module.exports = function (router, config, container) {
             if (!image) {
                 return res.status(404).send('Not found');
             }
+
             res.render('images/view', {
                 images: [image]
             });
@@ -40,9 +41,10 @@ module.exports = function (router, config, container) {
             path_date: path_date,
             group: guid
         }}).then(function (images) {
-            if (!images) {
+            if (!images || !images.length) {
                 return res.status(404).send('Not found');
             }
+
             res.render('images/view', {
                 images: images
             });

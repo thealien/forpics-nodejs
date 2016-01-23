@@ -7,7 +7,6 @@ var cookieParser    = require('cookie-parser');
 
 var bodyParser      = require('body-parser');
 var multer          = require('multer');
-var upload          = multer({ dest: 'uploads/' });
 var flash           = require('connect-flash');
 
 var initSwig        = require('./middleware/swig');
@@ -34,7 +33,9 @@ module.exports = function (app, config) {
 
     app.use(express.static(path.join(__dirname, '../public')));
 
-    app.use(upload.any()); // TODO replace "any" with better implementation
+    var upload = multer(config.multer);
+
+    app.use(upload.fields([{name: "uploadfile[]"}]));
 
     initLocals(app, config);
 

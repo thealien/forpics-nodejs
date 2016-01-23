@@ -21,11 +21,15 @@ Validator.prototype.allowedMime = [
 Validator.prototype.validateImageFile = function (image) {
     var error = null;
 
+    console.log(image.extension);
+
     if (image.size > this.maxSize) {
         error = new Error('validation.error.filesize_too_large');
     } else if (this.allowedExt.indexOf((image.extension+'').toLowerCase()) === -1) {
+        console.log('EXT');
         error = new Error('validation.error.unsupported_image_type');
     } else if (this.allowedMime.indexOf((image.mimetype+'').toLowerCase()) === -1) {
+        console.log('MIME');
         error = new Error('validation.error.unsupported_image_type');
     }
 

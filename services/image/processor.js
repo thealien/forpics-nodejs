@@ -201,7 +201,7 @@ Processor.prototype.checkDestinationPaths = function (callback) {
 
 Processor.prototype.getDatePath = function () {
     var date = new Date(),
-        path = ''+date.getFullYear() + (date.getMonth()+1) + ('0'+date.getDate()+'').substr(-2);
+        path = ''+date.getFullYear() + ('0'+(date.getMonth()+1)+'').substr(-2) + ('0'+date.getDate()+'').substr(-2);
     return path;
 };
 

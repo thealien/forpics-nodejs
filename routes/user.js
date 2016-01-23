@@ -1,9 +1,13 @@
 'use strict';
 
+var LinkPager = require('../views/widgets/LinkPager.js');
+
 module.exports = function (router, config, container) {
     var passport = container.require('app:passport');
     var models = container.require('app:models');
     var User = models.User;
+    var Image = models.Image;
+    var pager = LinkPager.create(20, 10);
 
 
     /**
@@ -99,10 +103,39 @@ module.exports = function (router, config, container) {
     /**
      * Page with my images
      */
-    router.get('/my/:page?', function(req, res) {
-        //var page = req.params.page || 1;
-        res.render('user/gallery', {
+    router.all(function (req, res, next) {
+        if (req.isAuthenticated()) {
+            next();
+        } else {
+            res.redirect('/');
+        }
+    }).get('/my/:page?', function(req, res) {
+        var limit = 18,
+            page = Math.max(req.params.page || 1, 1),
+            offset = (page-1) * limit,
+            userId = req.user.id,
+            where = {
+                uploaduserid: userId
+            };
 
+        Image.count({where: where}).then(function (count) {
+            Image.findAll({
+                where: where,
+                offset: offset,
+                limit: limit,
+                order: 'id DESC'
+            }).then(function (images) {
+                res.render('user/gallery', {
+                    images: images,
+                    pagination: pager.build({
+                        currentPage:    page,
+                        itemsCount:     count,
+                        urlPrefix:      '/my/'
+                    })
+                });
+            }).catch(function (error) {
+                next(error);
+            });
         });
     });
 
