@@ -1,8 +1,9 @@
 'use strict';
 
-var passport       = require('passport'),
-    LocalStrategy  = require('passport-local').Strategy,
-    User;
+const passport       = require('passport'),
+    LocalStrategy  = require('passport-local').Strategy;
+
+let User;
 
 passport.use(new LocalStrategy({
     usernameField: 'username',
@@ -10,10 +11,10 @@ passport.use(new LocalStrategy({
 }, function(username, password, done){
     User.find({ where: { username: username }}).then(function(user){
         if (!user) {
-            return done(null, false, { error: 'Incorrect username.' });
+            return done(null, false, { error: 'Неверное имя пользователя и/или пароль' });
         }
         if (!user.samePassword(password)) {
-            return done(null, false, { error: 'Incorrect password.' });
+            return done(null, false, { error: 'Неверное имя пользователя и/или пароль' });
         }
         return done(null, user);
     }).catch(function (error) {

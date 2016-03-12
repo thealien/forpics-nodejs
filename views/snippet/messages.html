@@ -1,10 +1,9 @@
 {% if messages %}
-Во время загрузки произошли ошибки:
-<p class='message'>
-    {% for message in messages %}
-    <b>{{ loop.index }}.</b> {{ message|e }}
-    {% if not loop.last%}<br>{% endif %}
+    {% for type, group in messages %}
+        <div class="collection">
+        {% for message in group %}
+            <li class="collection-item{% if type == 'error' %} red accent-1{% endif %}">{{ message|e }}</li>
+        {% endfor %}
+        </div>
     {% endfor %}
-</p>
-<div class='hr'></div>
 {% endif %}

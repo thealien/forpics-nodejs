@@ -1,19 +1,12 @@
 {% extends "../layout.html" %}
 
-{% block head_menu_my %}
-<li class="menu-item">
-    <a href="/my/" class='current' title='Просмотр картинок, залитых мной'>Мои картинки</a>
-</li>
-{% endblock %}
-
 {% block add_js %}
-<script type='application/javascript'>
+    app.active_menu = 'my';
     $(function(){
         $('div.codes input.text,p.group-title>input').bind('focus click mouseover', function(){
             this.select(0,0);
         });
     });
-</script>
 {% endblock %}
 
 {% block content %}

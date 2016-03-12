@@ -5,7 +5,7 @@ function LinkPager(itemsPerPage, linksCount, renderConfig){
         itemsPerPage:   parseInt(itemsPerPage, 10) || 10,
         linksCount:     parseInt(linksCount, 10) || 10
     };
-    renderConfig = renderConfig || {}
+    renderConfig = renderConfig || {};
     this.renderConfig = {
         listClass:      renderConfig.listClass  || 'yiiPager',
         itemClass:      renderConfig.itemClass  || 'page',

@@ -11,15 +11,70 @@
     </title>
     {% block add_meta %}
     {% endblock %}
-    <link href="/css/style{% if IS_PROD %}.min{% endif %}.css" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css"
+          media="screen,projection">
+    <link href="/css/basic{% if IS_PROD %}.min{% endif %}.css" rel="stylesheet" type="text/css">
+    <link href="/css/menu{% if IS_PROD %}.min{% endif %}.css" rel="stylesheet" type="text/css">
+    <!--link href="/css/style{% if IS_PROD %}.min{% endif %}.css" rel="stylesheet" type="text/css"-->
     {% block add_css %}
     {% endblock %}
+    <script>
+        var app = {
+            active_menu: 'main'
+        };
+    </script>
 </head>
 {% endblock %}
 
 {% block body %}
 <body>
-<div id="wrapper">
+
+<header>
+    <nav class="top-nav">
+        <div class="container">
+            <div class="nav-wrapper"><a class="page-title">{% block nav_title %}{% endblock %}</a></div>
+        </div>
+    </nav>
+    <ul class="side-nav fixed">
+        <li class="">
+            <a href="/" title="На главную">
+                <img style="max-width: 100%" src="/images/logo.png">
+            </a>
+        </li>
+        <li class="bold main"><a href="/" class="waves-effect waves-teal">Добавить изображение</a></li>
+        <li class="bold app"><a href="/app" class="waves-effect waves-teal">Приложение</a></li>
+        {% if user %}
+        <li class="bold my"><a href="/my" class="waves-effect waves-teal">Мои изображения</a></li>
+        <li class="divider"></li>
+        <li class="bold"><a href="/user/logout" class="waves-effect waves-teal">Выйти</a></li>
+            {% if user && user.isAdmin() %}
+            <li class="divider"></li>
+            <li class="bold"><a href="/admin" class="waves-effect waves-teal">Администрирование</a></li>
+            {% endif %}
+        {% else %}
+        <li class="bold login"><a href="/user/login" class="waves-effect waves-teal">Вход</a></li>
+        <li class="bold register"><a href="/user/register" class="waves-effect waves-teal">Регистрация</a></li>
+        {% endif %}
+    </ul>
+</header>
+
+<main>
+    <div class="container">
+    {% block content %}{% endblock %}
+    </div>
+</main>
+
+<footer class="page-footer">
+    <div class="footer-copyright">
+        <div class="container">
+            &copy; 2011&mdash;2016 Forpics.ru
+        </div>
+    </div>
+</footer>
+
+
+<!--div id="wrapper">
     <header>
         <div id='header'>
             <div id='header-inner'>
@@ -91,12 +146,15 @@
             </p>
         </div>
     </div>
-</footer>
+</footer-->
 
-<script type='text/javascript' src='/js/jquery-1.6.1.min.js'></script>
+<script type='text/javascript' src='/js/jquery-2.2.0.min.js'></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+<script type='text/javascript' src='/js/menu.js'></script>
+<script type='application/javascript'>
 {% block add_js %}
-
 {% endblock %}
+</script>
 
 </body>
 {% endblock %}
