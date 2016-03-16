@@ -1,10 +1,10 @@
-var path            = require('path');
-var swig            = require('swig');
-var viewHelpers     = require('../../views/helpers');
+const path            = require('path');
+const swig            = require('swig');
+const viewHelpers     = require('../../views/helpers');
 
 module.exports = function (app, config) {
 
-    var messages = config.messages || {};
+    const messages = config.messages || {};
 
     swig.setFilter('fileSize', viewHelpers.fileSize);
 

@@ -1,9 +1,9 @@
-var session         = require('express-session');
-var FileStore       = require('session-file-store')(session);
+const session         = require('express-session');
+const FileStore       = require('session-file-store')(session);
 
 module.exports = function (app, config) {
 
-    var sessionConfig = config.app.session;
+    const sessionConfig = config.app.session;
 
     app.use(session({
         secret: sessionConfig.secret,

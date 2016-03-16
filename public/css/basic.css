@@ -10,4 +10,57 @@ body {
 
 main {
     flex: 1 0 auto;
+    padding-left: 240px;
+}
+
+@media only screen and (max-width: 992px) {
+    header,main,footer {
+        padding-left:0
+    }
+}
+
+#logo {
+    padding-top: 10px;
+}
+
+.upload.progress {
+    visibility: hidden;
+    margin: 0;
+}
+
+#upload-wrapper {
+    position: relative;
+    height: 100%;
+}
+
+#upload {
+    position: relative;
+    text-align: center;
+    overflow: hidden;
+    width: 71px;
+    height: 71px;
+    margin: auto;
+    top: 40%;
+}
+#upload form{
+    height: 100%;
+}
+
+#upload input.file {
+    opacity: 0;
+    height: 100%;
+    width: 100%;
+    cursor: pointer;
+    border-radius: 35px;
+}
+
+#upload #upload-btn {
+    position: absolute;
+    top: 0;
+    background-image: url("../images/upload_button.png");
+    width: 71px;
+    height: 71px;
+    display: block;
+    cursor: pointer;
+    border-radius: 35px;
 }

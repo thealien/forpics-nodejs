@@ -1,12 +1,12 @@
 'use strict';
 
-var config      = require('./config');
-var express     = require('express');
-var container   = require('smallbox');
-var app         = express();
-var port        = process.env.PORT || 3000;
+const config      = require('./config');
+const express     = require('express');
+const container   = require('smallbox');
+const app         = express();
+const port        = process.env.PORT || 3000;
 
-app.isProd = (app.get('env') !== 'development');
+app.isProd = (app.get('env') === 'production');
 
 // boot
 require('./boot')(app, config, container);

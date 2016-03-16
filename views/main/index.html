@@ -8,11 +8,28 @@
 
 {% block content %}
 
-{% if messages.rejectedImages %}
-    {% include '../snippet/rejected-images.html' with messages only %}
-{% endif %}
+<div class="progress upload">
+    <div class="indeterminate"></div>
+</div>
 
-<div>
+<div id="upload-wrapper">
+    <div id="upload" title="Выбрать файлы для загрузки">
+        <div id="upload-btn"></div>
+        <form action='/up/' method='post' enctype='multipart/form-data'>
+            <input required="required" class='file' type='file' name="uploadfile[]" multiple="multiple"
+                   accept="image/*" onchange="if(this.value) this.form.submit();">
+        </form>
+    </div>
+
+    {% if messages.rejectedImages %}
+    <div class="container">
+        {% include '../snippet/rejected-images.html' with messages only %}
+    </div>
+    {% endif %}
+    
+</div>
+
+<div style="display: none">
     <form action='/up/' method='post' enctype='multipart/form-data'>
         <input type="hidden" name="preview" id="preview" value='2'>
         <h3>Выберите файлы:</h3>

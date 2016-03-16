@@ -1,10 +1,10 @@
 {% if rejectedImages.length %}
-Во время загрузки произошли ошибки:
-<p class='message'>
+<h5>
+    Во время загрузки произошли ошибки:
+</h5>
+<div class="collection">
     {% for image in rejectedImages %}
-    <b>{{ loop.index }}.</b> {{ image.file.originalname|e }} - {{ image.error|tr|e }}
-    {% if not loop.last%}<br>{% endif %}
+    <li class="collection-item red accent-1">&bull; {{ image.file.originalname|e }} - {{ image.error|tr|e }}</li>
     {% endfor %}
-</p>
-<div class='hr'></div>
+</div>
 {% endif %}

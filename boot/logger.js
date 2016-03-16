@@ -1,13 +1,13 @@
 'use strict';
 
-var winston = require('winston');
+const winston = require('winston');
 
 module.exports = function (app, config) {
 
-    var conf = config.logger || [],
+    const conf = config.logger || [],
         transports = [];
 
-    conf.forEach(function (transportCnf, name) {
+    conf.forEach(function (transportCnf) {
         transports.push(new (winston.transports[transportCnf.type])(transportCnf));
     });
 
