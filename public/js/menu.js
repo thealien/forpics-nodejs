@@ -10,5 +10,7 @@
         selectActiveMenu(app.active_menu);
     });
 
+    $(".button-collapse").sideNav();
+
 })();
 

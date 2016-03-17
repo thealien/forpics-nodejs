@@ -134,8 +134,9 @@ Processor.prototype.process = function (image, options, callback) {
 
     async.series(steps, function (error, results) {
         if (error) {
+            console.log(error);
             callback(error);
-            fs.unlink(targetImage);
+            fs.unlink(targetImage); // TODO error sometimes
             return;
         }
         callback(null, result);

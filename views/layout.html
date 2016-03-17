@@ -33,10 +33,16 @@
 <header>
     <nav class="top-nav">
         <div class="container">
+            <a href="#" data-activates="nav-mobile" class="button-collapse top-nav full hide-on-med-and-up">
+                <i class="mdi-navigation-menu"></i>
+            </a>
+        </div>
+        <div class="container">
             <div class="nav-wrapper"><a class="page-title">{% block nav_title %}{% endblock %}</a></div>
         </div>
     </nav>
-    <ul class="side-nav fixed">
+
+    <ul class="side-nav fixed" id="nav-mobile">
         <li class="">
             <a href="/" title="На главную" id="logo">
                 <img style="max-width: 100%" src="/images/logo.png">

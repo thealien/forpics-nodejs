@@ -11,12 +11,7 @@ body {
 main {
     flex: 1 0 auto;
     padding-left: 240px;
-}
-
-@media only screen and (max-width: 992px) {
-    header,main,footer {
-        padding-left:0
-    }
+    position: relative;
 }
 
 #logo {
@@ -29,8 +24,18 @@ main {
 }
 
 #upload-wrapper {
-    position: relative;
+    position: absolute;
     height: 100%;
+    right: 0;
+    left:240px;
+    top: 4px;
+}
+
+#upload-wrapper .reqs {
+    position: absolute;
+    bottom: 0;
+    padding: 0 10px;
+    font-size: small;
 }
 
 #upload {
@@ -39,9 +44,10 @@ main {
     overflow: hidden;
     width: 71px;
     height: 71px;
-    margin: auto;
-    top: 40%;
+    margin: 0 auto;
+    top: 45%;
 }
+
 #upload form{
     height: 100%;
 }
@@ -63,4 +69,17 @@ main {
     display: block;
     cursor: pointer;
     border-radius: 35px;
+}
+
+#upload #upload-btn.hover {
+    background-position: 72px 0;
+}
+
+@media only screen and (max-width: 990px) {
+    header,main,footer {
+        padding-left:0
+    }
+    #upload-wrapper {
+        left: 0;
+    }
 }
