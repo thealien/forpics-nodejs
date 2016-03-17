@@ -10,8 +10,17 @@ body {
 
 main {
     flex: 1 0 auto;
-    padding-left: 240px;
     position: relative;
+}
+
+header,main,footer {
+    padding-left: 240px
+}
+
+.top-nav .page-title {
+    vertical-align: middle;
+    font-size: 22px;
+    text-align: center;
 }
 
 #logo {
@@ -27,7 +36,7 @@ main {
     position: absolute;
     height: 100%;
     right: 0;
-    left:240px;
+    left: 240px;
     top: 4px;
 }
 
@@ -48,7 +57,7 @@ main {
     top: 45%;
 }
 
-#upload form{
+#upload form {
     height: 100%;
 }
 
@@ -76,10 +85,12 @@ main {
 }
 
 @media only screen and (max-width: 990px) {
-    header,main,footer {
-        padding-left:0
+    header, main, footer {
+        padding-left: 0
     }
+
     #upload-wrapper {
         left: 0;
     }
+
 }

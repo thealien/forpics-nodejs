@@ -33,12 +33,12 @@
 <header>
     <nav class="top-nav">
         <div class="container">
-            <a href="#" data-activates="nav-mobile" class="button-collapse top-nav full hide-on-med-and-up">
-                <i class="mdi-navigation-menu"></i>
-            </a>
-        </div>
-        <div class="container">
-            <div class="nav-wrapper"><a class="page-title">{% block nav_title %}{% endblock %}</a></div>
+            <div class="nav-wrapper center-align">
+                <a href="#" data-activates="nav-mobile" class="button-collapse top-nav full hide-on-large-only">
+                    <i class="mdi-navigation-menu"></i>
+                </a>
+                <a class="page-title">{% block nav_title %}{% endblock %}</a>
+            </div>
         </div>
     </nav>
 
@@ -71,7 +71,7 @@
 
 <footer class="page-footer">
     <div class="footer-copyright">
-        <div class="container">
+        <div class="container center-align">
             &copy; 2011&mdash;2016 Forpics.ru
         </div>
     </div>
