@@ -175,7 +175,7 @@ Processor.prototype.resolveOptions = function (options) {
     resolvedOptions.normalize = !!options.normalize;
     resolvedOptions.resize = config.resize[+options.resize] || null;
     resolvedOptions.rotate = config.rotate[+options.rotate] || null;
-    resolvedOptions.preview = config.preview[+options.preview] || config.preview[2];
+    resolvedOptions.preview = config.preview[+options.preview] || config.preview[3]; // default prev size
 
     return resolvedOptions;
 };

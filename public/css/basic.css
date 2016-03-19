@@ -1,3 +1,6 @@
+/*
+BASIC THINGS
+*/
 a:focus {
     outline: none;
 }
@@ -13,9 +16,21 @@ main {
     position: relative;
 }
 
-header,main,footer {
+header, main, footer {
     padding-left: 240px
 }
+
+/*
+SIDEBAR
+*/
+
+#logo {
+    padding-top: 10px;
+}
+
+/*
+NAVBAR
+*/
 
 .top-nav .page-title {
     vertical-align: middle;
@@ -23,9 +38,9 @@ header,main,footer {
     text-align: center;
 }
 
-#logo {
-    padding-top: 10px;
-}
+/*
+MAIN SCREEN
+*/
 
 .upload.progress {
     visibility: hidden;
@@ -66,7 +81,7 @@ header,main,footer {
     height: 100%;
     width: 100%;
     cursor: pointer;
-    border-radius: 35px;
+    border-radius: 50%;
 }
 
 #upload #upload-btn {
@@ -77,12 +92,24 @@ header,main,footer {
     height: 71px;
     display: block;
     cursor: pointer;
-    border-radius: 35px;
+    border-radius: 50%;
 }
 
 #upload #upload-btn.hover {
     background-position: 72px 0;
 }
+
+/*
+LOGIN, REGISTER SCREEN
+*/
+#login-form, #register-form {
+    max-width: 400px;
+    margin: 50px auto 0;
+}
+
+/*
+MEDIA QUERIES
+*/
 
 @media only screen and (max-width: 990px) {
     header, main, footer {

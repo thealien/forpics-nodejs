@@ -119,7 +119,7 @@ module.exports = function (router, config, container) {
      */
     router.route('/my/:page?')
         .all(authRequired)
-        .get(function (req, res) {
+        .get(function (req, res, next) {
             const limit = 18,
                 page = Math.max(req.params.page || 1, 1),
                 offset = (page - 1) * limit,
@@ -129,6 +129,7 @@ module.exports = function (router, config, container) {
                 };
 
             Image.count({where: where}).then(function (count) {
+                console.log(count);
                 Image.findAll({
                     where: where,
                     offset: offset,
@@ -144,7 +145,7 @@ module.exports = function (router, config, container) {
                         })
                     });
                 }).catch(next);
-            });
+            }).catch(next);
         });
 
 };
