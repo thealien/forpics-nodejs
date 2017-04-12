@@ -13,6 +13,8 @@ const initSessions = require('./middleware/sessions');
 const initLocals = require('./middleware/locals');
 
 module.exports = (app, config) => {
+    const appConfig = config.app;
+
     initSwig(app, config);
 
     // console http logs
@@ -29,7 +31,7 @@ module.exports = (app, config) => {
 
     app.use(flash());
     app.use(express['static'](path.join(__dirname, '../public')));
-    app.use(multer(config.multer).fields([{name: "uploadfile[]"}]));
+    app.use(multer(config.multer).fields([{name: appConfig.filesFormField}]));
 
     initLocals(app, config);
 

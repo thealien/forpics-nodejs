@@ -9,5 +9,7 @@
     "paths" : {
         "images": "i",
         "previews": "p"
-    }
+    },
+
+    "filesFormField": "uploadfile[]"
 }

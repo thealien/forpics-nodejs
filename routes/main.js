@@ -7,7 +7,7 @@ const path = require('path');
 
 const utils = require('../utils');
 
-const filesFieldname = 'uploadfile[]';
+let filesFieldname;
 
 let models,
     uploadConfig,
@@ -20,6 +20,7 @@ module.exports = (router, config, container) => {
     validator = container.require('image:validator');
     processor = container.require('image:processor');
     uploadConfig = config.imageProcess;
+    filesFieldname = config.app.filesFormField;
 
     /**
      * Main page
