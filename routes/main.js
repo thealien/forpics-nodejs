@@ -1,48 +1,47 @@
 'use strict';
 
-var async =require('async'),
-    fs = require('fs'),
-    imagesize = require('image-size'),
-    utils = require('../utils'),
-    util = require('util'),
-    path = require('path'),
-    models,
+const async =require('async');
+const fs = require('fs');
+const imagesize = require('image-size');
+const path = require('path');
+
+const utils = require('../utils');
+
+const filesFieldname = 'uploadfile[]';
+
+let models,
     uploadConfig,
     validator,
     processor;
 
-var filesFieldname = 'uploadfile[]';
-
-module.exports = function (router, config, container) {
-    var app = container.require('app:core');
+module.exports = (router, config, container) => {
+    const app = container.require('app:core');
     models = container.require('app:models');
-    uploadConfig = config.imageProcess;
     validator = container.require('image:validator');
     processor = container.require('image:processor');
-
+    uploadConfig = config.imageProcess;
 
     /**
      * Main page
      */
-    router.get('/', function(req, res) {
+    router.get('/', (req, res) => {
         res.render('main/index', {
             title: 'Main page',
             messages: req.flash()
         });
     });
 
-
     /**
      * Upload from web | Upload from windows-client
      */
-    router.post('/up', function(req, res) {
-        handleUpload(req,  res, function (error, processedImages, rejectedImages) {
-            var location,
-                firstImage;
-
+    router.post('/up', (req, res) => {
+        handleUpload(req, (error, processedImages = [], rejectedImages = []) => {
             if (rejectedImages.length) {
                 req.flash('rejectedImages', rejectedImages);
             }
+
+            let location,
+                firstImage;
 
             switch (processedImages.length) {
                 case 0:
@@ -52,40 +51,37 @@ module.exports = function (router, config, container) {
                 case 1:
                     // 1 image uploaded
                     firstImage = processedImages[0];
-                    location = util.format('/image/%s/%s',  firstImage.path_date, firstImage.guid);
+                    location = `/image/${firstImage.path_date}/${firstImage.guid}`;
                     break;
                 default:
                     // group of images uploaded
                     firstImage = processedImages[0];
-                    location = util.format('/images/%s/%s', firstImage.path_date, firstImage.group);
+                    location = `/images/${firstImage.path_date}/${firstImage.group}`;
             }
             res.redirect(location);
         });
     });
 
 
-    router.post('/upload', function(req, res) {
-        handleUpload(req,  res, function (error, processedImages, rejectedImages) {
-            var type;
+    router.post('/upload', (req, res) => {
+        handleUpload(req, (error, processedImages = [], rejectedImages = []) => {
             if (error) {
-                res.status(500).send('Internal Server Error');
-                return;
+                return res.status(500).send('Internal Server Error');
             }
             res.locals = app.locals;
-            type = req.get('json') ? 'json' : 'xml';
-            switch (type) {
-                case 'json':
-                    sendJsonResponse(res, error, processedImages, rejectedImages);
-                    break;
 
-                case 'xml':
-                    sendXmlResponse(res, error, processedImages, rejectedImages);
-                    break;
+            const type = req.get('json') ? 'json' : 'xml';
+            const responseFns = {
+                json: sendJsonResponse,
+                xml: sendXmlResponse
+            };
 
-                default:
-                    res.status(418).send("I'm a teapot");
-                    break;
+            const responseFn = responseFns[type];
+            if (!responseFn) {
+                return res.status(418).send("I'm a teapot");
             }
+
+            responseFn(res, processedImages, rejectedImages);
         });
     });
 
@@ -96,29 +92,25 @@ module.exports = function (router, config, container) {
 // Helpers functions
 //
 
-function handleUpload (req, res, callback) {
-    var receivedFiles = req.files[filesFieldname] || [],
-        rejectedImages = [],
+function handleUpload (req, callback) {
+    const receivedFiles = [].concat(req.files[filesFieldname]);
+    let rejectedImages = [],
         acceptedImages = [],
         processedImages = [],
         steps = [];
 
-    // 0. Normalize files array
-    if (!(receivedFiles instanceof Array)) {
-        receivedFiles = [receivedFiles];
-    }
-
     // 1. Filter files by allowed dimensions
-    steps.push(function (callback) {
-        acceptedImages = receivedFiles.filter(function (image) {
-            var error;
+    steps.push(callback => {
+        acceptedImages = receivedFiles.filter(image => {
             image.extension = image.extension || getExtension(image.originalname);
+
+            let error;
             if (image.truncated) {
                 error = new Error('File truncated');
-            }
-            if (!error) {
+            } else {
                 error = validator.validateImageFile(image);
             }
+
             if (error) {
                 rejectedImages.push({
                     file: image,
@@ -131,9 +123,9 @@ function handleUpload (req, res, callback) {
     });
 
     // 2. Filter images by allowed size/type
-    steps.push(function (callback) {
-        async.filter(acceptedImages, function (image, callback) {
-            getDimensions(image, function (error, dimensions) {
+    steps.push(callback => {
+        async.filter(acceptedImages, (image, callback) => {
+            getDimensions(image.path, (error, dimensions) => {
                 if (!error) {
                     error = validator.validateDimensions(dimensions);
                 }
@@ -150,25 +142,26 @@ function handleUpload (req, res, callback) {
 
                 callback(!error);
             });
-        }, function (images) {
-            acceptedImages = images || [];
+        }, images => {
+            acceptedImages = images;
             callback();
         });
     });
 
     // 3. Process images
-    steps.push(function (callback) {
-        var options = resolveUploadOptions(req);
-        var group = utils.guid();
-        async.each(acceptedImages, function (image, callback) {
-            processor.process(image, options, function (error, result) {
+    steps.push(callback => {
+        const options = resolveUploadOptions(req);
+        const groupGuid = utils.guid();
+
+        async.each(acceptedImages, (image, callback) => {
+            processor.process(image, options, (error, result) => {
                 if (error) {
                     rejectedImages.push({
                         file: image,
                         error: error.message
                     });
                 } else {
-                    result.group = group;
+                    result.group = groupGuid;
                     processedImages.push(result);
                 }
                 callback();
@@ -177,14 +170,15 @@ function handleUpload (req, res, callback) {
     });
 
     // 4. Save results in DB
-    steps.push(function (callback) {
-        var meta = {
+    steps.push(callback => {
+        const meta = {
             ip: req.ip,
             userId: req.user ? req.user.userID : 0,
             useragent: resolveUseragentId(req.get('User-Agent'))
         };
-        async.each(processedImages, function (image, callback) {
-            saveImageRecord(image,  meta, function (error) {
+
+        async.each(processedImages, (image, callback) => {
+            saveImageRecord(image,  meta, error => {
                 if (error) {
                     console.error(error);
                 }
@@ -194,7 +188,7 @@ function handleUpload (req, res, callback) {
     });
 
     // 5. Remove tmp files, return results
-    async.series(steps, function (error) {
+    async.series(steps, error => {
         deleteRejectedImages(rejectedImages);
         callback(error, processedImages, rejectedImages);
     });
@@ -206,24 +200,22 @@ function handleUpload (req, res, callback) {
  * @return {Object}
  */
 function resolveUploadOptions (req) {
-    var params = req.body || {},
-        options = {};
-
-    options.normalize = !!params.normalize;
-    options.resize = uploadConfig.resize[+params.resize] || null;
-    options.rotate = uploadConfig.rotate[+params.rotate] || null;
-    options.preview = uploadConfig.preview[+params.preview] || null;
-
-    return options;
+    const params = req.body || {};
+    return {
+        resize: uploadConfig.resize[+params.resize] || null,
+        rotate: uploadConfig.rotate[+params.rotate] || null,
+        preview: uploadConfig.preview[+params.preview] || null,
+        normalize: !!params.normalize
+    };
 }
 
 /**
  *
- * @param {Object} image
+ * @param {String} imagePath
  * @param {Function} callback
  */
-function getDimensions (image, callback) {
-    imagesize(image.path, callback);
+function getDimensions (imagePath, callback) {
+    imagesize(imagePath, callback);
 }
 
 /**
@@ -233,7 +225,7 @@ function getDimensions (image, callback) {
  * @param {Function} callback
  */
 function saveImageRecord (data, meta, callback) {
-    var image = models.Image.build({
+    const image = models.Image.build({
         filename: data.filename,
         deleteGuid: data.deleteGuid,
         width: data.width,
@@ -257,14 +249,11 @@ function saveImageRecord (data, meta, callback) {
         .catch(callback);
 }
 
-function deleteRejectedImages (images) {
-    images = images || [];
-    images.forEach(function (image) {
-        fs.unlink(image.file.path);
-    });
+function deleteRejectedImages (images = []) {
+    images.forEach(image => fs.unlink(image.file.path));
 }
 
-function sendXmlResponse (res, error, processedImages, rejectedImages) {
+function sendXmlResponse (res, processedImages, rejectedImages) {
     res.type('xml');
     res.render('images/view.xml.html', {
         layout: false,
@@ -273,32 +262,28 @@ function sendXmlResponse (res, error, processedImages, rejectedImages) {
     });
 }
 
-function sendJsonResponse (res, error, processedImages, rejectedImages) {
-    var result = [],
-        locals = res.locals,
-        baseUrl = locals.baseUrl,
-        paths = locals.paths;
+function sendJsonResponse (res, processedImages = [], rejectedImages = []) {
+    const {baseUrl, paths} = res.locals;
+    const result = [];
 
-    (rejectedImages || []).forEach(function (image) {
+    rejectedImages.forEach(image => {
         if (image.error) {
             result.push(image.error.message);
         }
     });
 
-    (processedImages || []).forEach(function (image) {
-        var item = {
-            url: [baseUrl, paths.images, image.path_date, image.filename].join('/'),
-            delurl: [baseUrl, 'delete', image.path_date, image.deleteGuid].join('/'),
+    processedImages.forEach(image => {
+        result.push({
+            url: `${baseUrl}/${paths.images}/${image.path_date}/${image.filename}`,
+            delurl: `${baseUrl}/delete/${image.path_date}/${image.deleteGuid}`,
             width: image.width,
             height: image.height,
             size: image.size,
-            preview_url: image.psize ? [baseUrl, paths.previews, image.path_date, image.filename].join('/') : '',
+            preview_url: image.psize ? `${baseUrl}/${paths.previews}/${image.path_date}/${image.filename}` : '',
             pwidth: image.pwidth || '',
             pheight: image.pheight || '',
             psize: image.psize || ''
-        };
-
-        result.push(item);
+        });
     });
 
     res.jsonp({
@@ -306,13 +291,8 @@ function sendJsonResponse (res, error, processedImages, rejectedImages) {
     });
 }
 
-function resolveUseragentId (useragent) {
-    var id = 0;
-    useragent = useragent || '';
-    if (useragent.indexOf('ForPicsUploader') !==-1 ) {
-        id = 1;
-    }
-    return id;
+function resolveUseragentId (useragent = '') {
+    return String(useragent).indexOf('ForPicsUploader') !==-1  ? 1 : 0;
 }
 
 function getExtension (filename) {

@@ -1,16 +1,15 @@
 'use strict';
 
-var LinkPager = require('../views/widgets/LinkPager.js');
+const LinkPager = require('../views/widgets/LinkPager.js');
 
-module.exports = function (router, config, container) {
-
-    var pager = LinkPager.create(20, 10);
+module.exports = (router/*, config, container*/) => {
+    const pager = LinkPager.create(20, 10);
 
     /**
      * Admin page
      */
     router.route('/admin/:page?')
-        .all(function (req, res, next) {
+        .all((req, res, next) => {
             if (req.isAuthenticated()) {
                 next();
             } else {
@@ -18,10 +17,11 @@ module.exports = function (router, config, container) {
             }
         })
         .post(function (/*res, req, next*/) {
-
+            // TODO
         })
-        .get(function(req, res) {
-            var page = req.params.page || 1;
+        .get((req, res) => {
+            const page = req.params.page || 1;
+            // TODO
             res.render('admin', {
                 title:'Администрирование',
                 pagination: pager.build({

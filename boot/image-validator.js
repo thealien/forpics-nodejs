@@ -2,7 +2,7 @@
 
 const Validator = require('../services/image/validator');
 
-module.exports = function (app, config/*, container*/) {
+module.exports = (app, config) => {
     const validatorConfig = config.validation.image;
 
     return new Validator({

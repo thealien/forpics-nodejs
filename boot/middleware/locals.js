@@ -1,11 +1,14 @@
-module.exports = function (app, config) {
+'use strict';
 
-    app.locals.paths = config.app.paths;
-    app.locals.IS_PROD = app.isProd;
+module.exports = (app, config) => {
+    const locals = app.locals;
 
-    app.use(function (req, res, next) {
-        if (!app.locals.baseUrl) {
-            app.locals.baseUrl = req.protocol + '://' + req.headers.host;
+    locals.paths = config.app.paths;
+    locals.IS_PROD = app.isProd;
+
+    app.use((req, res, next) => {
+        if (!locals.baseUrl) {
+            locals.baseUrl = `${req.protocol}://${req.headers.host}`;
         }
         next();
     });

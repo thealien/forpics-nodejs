@@ -53,7 +53,7 @@
         {% if user %}
         <li class="bold my"><a href="/my" class="waves-effect waves-teal">Мои изображения</a></li>
         <li class="divider"></li>
-        <li class="bold"><a href="/user/logout" class="waves-effect waves-teal">Выйти</a></li>
+        <li class="bold"><a onclick="return confirm('Выйти?')" href="/user/logout" class="waves-effect waves-teal">Выйти</a></li>
             {% if user && user.isAdmin() %}
             <li class="divider"></li>
             <li class="bold"><a href="/admin" class="waves-effect waves-teal">Администрирование</a></li>
@@ -72,7 +72,7 @@
 <footer class="page-footer">
     <div class="footer-copyright">
         <div class="container center-align">
-            &copy; 2011&mdash;2016 Forpics.ru
+            &copy; 2011&mdash;2017 ForPics.ru
         </div>
     </div>
 </footer>
@@ -80,9 +80,10 @@
 <script type='text/javascript' src='/js/jquery-2.2.0.min.js'></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
 <script type='text/javascript' src='/js/menu.js'></script>
+<script type='text/javascript'>
 {% block add_js %}
 {% endblock %}
-
+</script>
 </body>
 {% endblock %}
 </html>

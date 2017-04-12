@@ -1,18 +1,19 @@
 'use strict';
 
-const passport = require('passport'),
-    LocalStrategy = require('passport-local').Strategy;
+const passport = require('passport');
+const {Strategy} = require('passport-local');
 
-module.exports = function (app, config, container) {
-    const models = container.require('app:models'),
-        User = models.User;
-
-    passport.use(new LocalStrategy({
+module.exports = (app, config, container) => {
+    const {User} = container.require('app:models');
+    const opts = {
         usernameField: 'username',
         passwordField: 'password'
-    }, function (username, password, done) {
-        User.find({where: {username: username}})
-            .then(function (user) {
+    };
+
+    passport.use(new Strategy(opts, (username, password, done) => {
+        const query = User.find({where: {username: username}});
+        query
+            .then(user => {
                 let errors;
                 if (!user || !user.samePassword(password)) {
                     user = false;
@@ -23,12 +24,11 @@ module.exports = function (app, config, container) {
             .catch(done);
     }));
 
-    passport.serializeUser(function (user, done) {
-        done(null, user.userID);
-    });
+    passport.serializeUser((user, done) => done(null, user.userID));
 
-    passport.deserializeUser(function (id, done) {
-        User.find({where: {userID: id}})
+    passport.deserializeUser((id, done) => {
+        const query = User.find({where: {userID: id}});
+        query
             .then(function (user) {
                 done(null, user);
             })
@@ -38,7 +38,7 @@ module.exports = function (app, config, container) {
     app.use(passport.initialize());
     app.use(passport.session());
 
-    app.use(function (req, res, next) {
+    app.use((req, res, next) => {
         app.locals.user = req.user;
         next();
     });

@@ -1,13 +1,12 @@
 'use strict';
 
-var services = require('smallbox'),
-    utils = require('../utils'),
-    Sequelize = require('sequelize');
+const utils = require('../utils');
+const Sequelize = require('sequelize');
 
-module.exports = function (app, config/*, container*/) {
-    var dbConfig = config.db;
+module.exports = (app, config) => {
+    const dbConfig = config.db;
 
-    var db = new Sequelize(dbConfig.database, dbConfig.user, dbConfig.password, {
+    const db = new Sequelize(dbConfig.database, dbConfig.user, dbConfig.password, {
         host: dbConfig.host,
         port: dbConfig.port,
         define: {
@@ -16,7 +15,7 @@ module.exports = function (app, config/*, container*/) {
         }
     });
 
-    var Image = db.define('images', {
+    const Image = db.define('images', {
         /*
          PRIMARY KEY (`id`),
          UNIQUE KEY `guid` (`path_date`,`guid`) USING BTREE,
@@ -123,7 +122,7 @@ module.exports = function (app, config/*, container*/) {
     });
 
 
-    var User = db.define('users', {
+    const User = db.define('users', {
         /*
          PRIMARY KEY (`userID`),
          UNIQUE KEY `username` (`username`),
@@ -145,11 +144,12 @@ module.exports = function (app, config/*, container*/) {
             allowNull:      false,
             notEmpty: true,
             validate: {
-                isUnique: function (username, done) {
+                isUnique: (username, done) => {
                     username = String(username).trim();
-                    User.find({ where: {username: username}, attributes: ['userID']})
-                        .then(function (record) {
-                            var error = record ? new Error('Username уже занят') : null;
+                    const query = User.find({ where: {username: username}, attributes: ['userID']});
+                    query
+                        .then(record => {
+                            const error = record ? new Error('Username уже занят') : null;
                             done(error);
                         })
                         .catch(done);
@@ -161,9 +161,7 @@ module.exports = function (app, config/*, container*/) {
         password: {
             type: Sequelize.STRING(50),
             allowNull:      false,
-            set: function(password) {
-                this.setDataValue('password', utils.md5(password));
-            },
+            set: password => this.setDataValue('password', utils.md5(password)),
             validate: {
                 notEmpty: true
             }
@@ -178,11 +176,12 @@ module.exports = function (app, config/*, container*/) {
                 isEmail: {
                     msg: 'Email имеет неверный формат'
                 },
-                isUnique: function (email, done) {
+                isUnique: (email, done) => {
                     email = String(email).trim();
-                    User.find({ where: {email: email}, attributes: ['userID']})
-                        .then(function (record) {
-                            var error = record ? new Error('Email уже занят') : null;
+                    const query = User.find({ where: {email: email}, attributes: ['userID']});
+                    query
+                        .then(record => {
+                            const error = record ? new Error('Email уже занят') : null;
                             done(error);
                         })
                         .catch(done);
@@ -205,12 +204,8 @@ module.exports = function (app, config/*, container*/) {
 
     }, {
         instanceMethods: {
-            samePassword: function (password) {
-                return this.password === utils.md5(password);
-            },
-            isAdmin: function () {
-                return this.role === 'admin';
-            }
+            samePassword: password => this.password === utils.md5(password),
+            isAdmin: () => this.role === 'admin'
         }
     });
 

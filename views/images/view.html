@@ -31,7 +31,7 @@
         <img class='image' src='/{{paths.images}}/{{image.path_date}}/{{image.filename}}' alt=''>
         {% endif %}
         <br>
-        {{image.width}} x {{image.height}}, {{image.filesize|fileSize}}
+        {{image.width}}px x {{image.height}}px, {{image.filesize|fileSize}}
     </a>
     <div class='codes'>
         <div class='image'>
@@ -45,7 +45,7 @@
             <b>Прямой адрес эскиза:</b>
             <input  class='text' value='{{baseUrl}}/{{paths.previews}}/{{image.path_date}}/{{image.filename}}' readonly="readonly">
             <b>BB-код для эскиза:</b>
-            <input  class='text' value='[url={{baseUrl}}/{{paths.images}}/{{image.path_date}}/{{image.filename}}][img]{{baseUrl}}/{{paths.previews}}/{{image.path_date}}/{{image.filename}}}[/img][/url]' readonly="readonly">
+            <input  class='text' value='[url={{baseUrl}}/{{paths.images}}/{{image.path_date}}/{{image.filename}}][img]{{baseUrl}}/{{paths.previews}}/{{image.path_date}}/{{image.filename}}[/img][/url]' readonly="readonly">
         </div>
         {% endif %}
         {% if user && (user.userID == image.uploaduserid) %}

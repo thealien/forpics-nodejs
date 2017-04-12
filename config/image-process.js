@@ -1,12 +1,14 @@
-var path = require('path'),
-    pub = path.resolve(__dirname, '../public');
+'use strict';
+
+const path = require('path');
+const pub = path.resolve(__dirname, '../public');
 
 module.exports = {
-    "path": {
-        "image": [pub, 'i'].join(path.sep),
-        "preview": [pub, 'p'].join(path.sep)
+    path: {
+        image: `${pub}${path.sep}i`,
+        preview: `${pub}${path.sep}p`
     },
-    "resize": [
+    resize: [
         null,
         [320, 240],
         [640, 480],
@@ -15,13 +17,13 @@ module.exports = {
         [1280, 1024],
         [1600, 1200]
     ],
-    "rotate": [
+    rotate: [
         null,
         90,
         -90,
         180
     ],
-    "preview": [
+    preview: [
         null,
         [100, 100],
         [150, 150],

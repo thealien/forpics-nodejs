@@ -2,6 +2,4 @@
 
 const Processor = require('../services/image/processor');
 
-module.exports = function (app, config/*, container*/) {
-    return new Processor(config.imageProcess);
-};
+module.exports = (app, config) => new Processor(config.imageProcess);

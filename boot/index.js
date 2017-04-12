@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function (app, config, container) {
+module.exports = (app, config, container) => {
     const modules = {
         'app:core': "./express",
         'app:logger': "./logger",
@@ -10,7 +10,8 @@ module.exports = function (app, config, container) {
         'image:processor': "./image-processor"
     };
 
-    Object.keys(modules).forEach(function (name) {
-        container.define(name, require(modules[name])(app, config, container));
+    Object.keys(modules).forEach(name => {
+        const module = require(modules[name])(app, config, container);
+        container.define(name, module);
     });
 };

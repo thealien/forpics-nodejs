@@ -2,17 +2,11 @@
 
 const winston = require('winston');
 
-module.exports = function (app, config) {
-
-    const conf = config.logger || [],
-        transports = [];
-
-    conf.forEach(function (transportCnf) {
-        transports.push(new (winston.transports[transportCnf.type])(transportCnf));
+module.exports = (app, config) => {
+    const transports = [...config.logger].map(transportCnf => {
+        const LoggerConstructor = winston.transports[transportCnf.type];
+        return new LoggerConstructor(transportCnf);
     });
 
-    return new (winston.Logger)({
-        transports: transports
-    });
-
+    return new (winston.Logger)({transports});
 };

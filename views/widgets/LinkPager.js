@@ -7,7 +7,7 @@ function LinkPager(itemsPerPage, linksCount, renderConfig){
     };
     renderConfig = renderConfig || {};
     this.renderConfig = {
-        listClass:      renderConfig.listClass  || 'yiiPager',
+        listClass:      renderConfig.listClass  || 'pagination',
         itemClass:      renderConfig.itemClass  || 'page',
         firstClass:     renderConfig.firstClass || 'first',
         prevClass:      renderConfig.prevClass  || 'previous',

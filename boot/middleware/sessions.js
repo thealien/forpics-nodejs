@@ -1,8 +1,9 @@
-const session         = require('express-session');
-const FileStore       = require('session-file-store')(session);
+'use strict';
 
-module.exports = function (app, config) {
+const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 
+module.exports = (app, config) => {
     const sessionConfig = config.app.session;
 
     app.use(session({
@@ -15,5 +16,4 @@ module.exports = function (app, config) {
         resave: false, // TODO check docs
         saveUninitialized: false // TODO check docs
     }));
-
 };
