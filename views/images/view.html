@@ -1,12 +1,14 @@
 {% extends "../layout.html" %}
 
 {% block add_js %}
+<script>
     app.active_menu = 'my';
     $(function(){
         $('div.codes input.text,p.group-title>input').bind('focus click mouseover', function(){
             this.select(0,0);
         });
     });
+</script>
 {% endblock %}
 
 {% block content %}

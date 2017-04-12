@@ -65,7 +65,7 @@ class Processor {
         // 3. Process main image
         if (willBeModified) {
             steps.push(callback => {
-                i = gm(image.path);
+                i = gm(targetImage);
 
                 if (options.resize) {
                     let [width, height] = options.resize;
@@ -218,9 +218,14 @@ class Processor {
     }
 
     getDatePath () {
-        var date = new Date(),
-            path = ''+date.getFullYear() + ('0'+(date.getMonth()+1)+'').substr(-2) + ('0'+date.getDate()+'').substr(-2);
-        return path;
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = ('0'+(date.getMonth()+1)+'').substr(-2);
+        const day = ('0'+date.getDate()+'').substr(-2);
+        // in Future...
+        //const month = String(date.getMonth()+1).padStart(2, 0);
+        //const day = String(date.getDate()).padStart(2, 0);
+        return `${year}${month}${day}`;
     }
 
     static create (config) {
@@ -230,7 +235,7 @@ class Processor {
 
 
 function generateFilename(max){
-    var guid = utils.guid();
+    const guid = utils.guid();
     max = +max || guid.length;
     return guid.substr(0, utils.rand(7, max));
 }
