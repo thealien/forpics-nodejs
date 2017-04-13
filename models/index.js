@@ -3,11 +3,11 @@
 const Sequelize = require('sequelize');
 
 module.exports = (app, config) => {
-    const dbConfig = config.db;
+    const {host, port, database, user, password} = config.db;
 
-    const db = new Sequelize(dbConfig.database, dbConfig.user, dbConfig.password, {
-        host: dbConfig.host,
-        port: dbConfig.port,
+    const db = new Sequelize(database, user, password, {
+        host: host,
+        port: port,
         define: {
             timestamps:      false,
             freezeTableName: true

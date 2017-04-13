@@ -32,7 +32,7 @@ class Validator {
             return new Error('Неподдерживаемый тип файла');
         }
 
-        if (!this.allowedMime.isAllowedMimetype(mimetype)) {
+        if (!this.isAllowedMimetype(mimetype)) {
             return new Error('Неподдерживаемый тип файла (mime)');
         }
 
