@@ -23,7 +23,7 @@
     "serve-favicon": "^2.4.2",
     "session-file-store": "0.0.24",
     "smallbox": "^0.2.1",
-    "swig": "^1.4.2",
+    "swig-templates": "^2.0.2",
     "winston": "^2.3.1"
   },
   "devDependencies": {

@@ -14,7 +14,6 @@ class Processor {
     }
 
     process (image, options, callback) {
-        options = this.resolveOptions(options);
         const processor = this;
         const result = {
             originalfilename: image.originalname,
@@ -60,7 +59,12 @@ class Processor {
         });
 
         // 2. Copy main image
-        steps.push(callback =>  fs.rename(image.path, targetImage, callback));
+        steps.push(callback =>  fs.rename(image.path, targetImage, function (error) {
+            if (error) {
+                error = new Error('processor.image_copy.failed');
+            }
+            callback(error);
+        }));
 
         // 3. Process main image
         if (willBeModified) {
@@ -140,7 +144,7 @@ class Processor {
             if (error) {
                 console.log(error);
                 callback(error);
-                fs.unlink(targetImage); // TODO error sometimes
+                fs.unlink(targetImage, () => {});
                 return;
             }
             callback(null, result);
@@ -164,6 +168,7 @@ class Processor {
         ],callback);
     }
 
+    /*
     resolveOptions (options = {}) {
         const config = this.config;
         const resolvedOptions = {};
@@ -175,6 +180,7 @@ class Processor {
 
         return resolvedOptions;
     }
+    */
 
     checkDestinationPaths (callback) {
         const processor = this;
@@ -199,7 +205,7 @@ class Processor {
                     if (exists) {
                         return callback(null, true);
                     }
-                    fs.mkdir(iPath, 0o644, callback);
+                    fs.mkdir(iPath, 0o775, callback);
                 });
             },
             callback => {
@@ -207,7 +213,7 @@ class Processor {
                     if (exists) {
                         callback(null, true);
                     } else {
-                        fs.mkdir(pPath, 0o644, callback);
+                        fs.mkdir(pPath, 0o775, callback);
                     }
                 });
             }

@@ -1,7 +1,7 @@
 'use strict';
 
 const path = require('path');
-const swig = require('swig');
+const swig = require('swig-templates');
 const viewHelpers = require('../../views/helpers');
 
 module.exports = (app, config) => {

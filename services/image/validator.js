@@ -1,49 +1,62 @@
 'use strict';
 
-const maxHeight = 10000;
-const maxWidth = 10000;
-const maxSize = 10*1024*1024;
-const allowedExt = [
+const viewHelpers = require('../../views/helpers');
+
+const MAX_HEIGHT = 10000;
+const MAX_WIDTH = 10000;
+const MAX_SIZE = 10*1024*1024;
+const MAX_SIZE_TEXT = viewHelpers.fileSize(MAX_SIZE);
+const ALLOWED_EXT = [
     "jpg", "jpeg", "gif", "png"
 ];
-const allowedMime = [
+const ALLOWED_MIME = [
     "image/jpeg", "image/pjpeg", "image/png", "image/x-png", "image/gif"
 ];
 
 class Validator {
 
     constructor (options) {
-        this.maxHeight = options.maxHeight || maxHeight;
-        this.maxWidth = options.maxWidth || maxWidth;
-        this.maxSize = options.maxSize || maxSize;
-        this.allowedExt = options.allowedExt || allowedExt;
-        this.allowedMime = options.allowedMime || allowedMime;
+        this.maxHeight = options.maxHeight || MAX_HEIGHT;
+        this.maxWidth = options.maxWidth || MAX_WIDTH;
+        this.maxSize = options.maxSize || MAX_SIZE;
+        this.allowedExt = options.allowedExt || ALLOWED_EXT;
+        this.allowedMime = options.allowedMime || ALLOWED_MIME;
     }
 
-    validateImageFile (image) {
-        var error = null;
-
-        if (image.size > this.maxSize) {
-            error = new Error('validation.error.filesize_too_large');
-        } else if (this.allowedExt.indexOf((image.extension+'').toLowerCase()) === -1) {
-            error = new Error('validation.error.unsupported_image_type');
-        } else if (this.allowedMime.indexOf((image.mimetype+'').toLowerCase()) === -1) {
-            error = new Error('validation.error.unsupported_image_type');
+    validateImageFile ({size, extension, mimetype}) {
+        if (size > this.maxSize) {
+            return new Error(`Размер файла превышает ${MAX_SIZE_TEXT}`);
         }
 
-        return error;
+        if (!this.isAllowedExtension(extension)) {
+            return new Error('Неподдерживаемый тип файла');
+        }
+
+        if (!this.allowedMime.isAllowedMimetype(mimetype)) {
+            return new Error('Неподдерживаемый тип файла (mime)');
+        }
+
+        return null;
+    }
+
+    isAllowedExtension (ext) {
+        return this.allowedExt.includes(String(ext).toLowerCase());
+    }
+
+    isAllowedMimetype (mimetype) {
+        return this.allowedMime.includes(String(mimetype).toLowerCase());
     }
 
     validateDimensions ({width, height}) {
-        var error = null;
-
         if (width > this.maxWidth) {
-            error = new Error('validation.error.width_too_large');
-        } else if (height > this.maxHeight) {
-            error = new Error('validation.error.height_too_large');
+            return new Error(`Ширина изображения превышает ${this.maxWidth}px`);
         }
 
-        return error;
+        if (height > this.maxHeight) {
+            return new Error(`Высота изображения превышает ${this.maxHeight}px`);
+        }
+
+        return null;
     }
 
 }
