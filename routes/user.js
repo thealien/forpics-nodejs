@@ -63,7 +63,6 @@ module.exports = (router, config, container) => {
         .all(guestRequired)
         .post(function (req, res, next) {
             passport.authenticate('local', function (error, user, info) {
-
                 if (info && info.error) {
                     req.flash('error', info.error);
                 }
@@ -116,7 +115,6 @@ module.exports = (router, config, container) => {
                 };
 
             Image.count({where: where}).then(function (count) {
-                console.log(count);
                 Image.findAll({
                     where: where,
                     offset: offset,

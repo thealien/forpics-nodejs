@@ -161,7 +161,9 @@ module.exports = (app, config) => {
         password: {
             type: Sequelize.STRING(50),
             allowNull:      false,
-            set: password => this.setDataValue('password', utils.md5(password)),
+            set: function (password) {
+                return this.setDataValue('password', utils.md5(password));
+            },
             validate: {
                 notEmpty: true
             }
@@ -204,8 +206,11 @@ module.exports = (app, config) => {
 
     }, {
         instanceMethods: {
-            samePassword: password => this.password === utils.md5(password),
-            isAdmin: () => this.role === 'admin'
+            samePassword: function (password) {
+                return this.password === utils.md5(password);            },
+            isAdmin: function () {
+                return this.role === 'admin';
+            }
         }
     });
 
