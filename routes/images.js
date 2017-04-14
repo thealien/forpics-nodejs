@@ -11,10 +11,7 @@ module.exports = (router, config, container) => {
         const {path_date, guid} = req.params;
 
         const query = Image.find({
-            where: {
-                path_date: path_date,
-                guid: guid
-            }
+            where: {path_date, guid}
         });
 
         query
@@ -40,7 +37,7 @@ module.exports = (router, config, container) => {
 
         const query = Image.findAll({
             where: {
-                path_date: path_date,
+                path_date,
                 group: guid
             }
         });
@@ -68,7 +65,7 @@ module.exports = (router, config, container) => {
 
             const query = Image.find({
                 where: {
-                    path_date: path_date,
+                    path_date,
                     deleteGuid: guid
                 }
             });
@@ -92,7 +89,7 @@ module.exports = (router, config, container) => {
 
             const query = Image.find({
                 where: {
-                    path_date: path_date,
+                    path_date,
                     deleteGuid: guid
                 }
             });

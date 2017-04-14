@@ -12,10 +12,10 @@ const initSwig = require('./middleware/swig');
 const initSessions = require('./middleware/sessions');
 const initLocals = require('./middleware/locals');
 
-module.exports = (app, config) => {
+module.exports = (app, config, container) => {
     const appConfig = config.app;
 
-    initSwig(app, config);
+    initSwig(app, config, container);
 
     // console http logs
     if (!app.isProd) {
@@ -27,13 +27,13 @@ module.exports = (app, config) => {
     app.use(bodyParser.urlencoded({extended: false}));
     app.use(cookieParser());
 
-    initSessions(app, config);
+    initSessions(app, config, container);
 
     app.use(flash());
     app.use(express['static'](path.join(__dirname, '../public')));
     app.use(multer(config.multer).fields([{name: appConfig.filesFormField}]));
 
-    initLocals(app, config);
+    initLocals(app, config, container);
 
     return app;
 

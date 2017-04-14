@@ -1,6 +1,8 @@
+'use strict';
+
 const utils = require('../utils');
 
-module.exports = function(db, DataTypes) {
+module.exports = function (db, DataTypes) {
 
     const User = db.define('users', {
         /*
@@ -11,22 +13,24 @@ module.exports = function(db, DataTypes) {
 
         // `userID` mediumint(8) unsigned NOT NULL AUTO_INCREMENT
         userID: {
-            type:           DataTypes.INTEGER.UNSIGNED,
-            autoIncrement:  true,
-            primaryKey:     true,
-            allowNull:      false
+            type: DataTypes.INTEGER.UNSIGNED,
+            autoIncrement: true,
+            primaryKey: true,
+            allowNull: false
         },
 
         // `username` varchar(50) DEFAULT NULL
         username: {
-            unique:     true,
+            unique: true,
             type: DataTypes.STRING(50),
-            allowNull:      false,
+            allowNull: false,
             notEmpty: true,
             validate: {
                 isUnique: (username, done) => {
                     username = String(username).trim();
-                    const query = User.find({ where: {username: username}, attributes: ['userID']});
+                    const query = User.find({
+                        where: {username}, attributes: ['userID']
+                    });
                     query
                         .then(record => {
                             const error = record ? new Error('Логин уже занят') : null;
@@ -40,7 +44,7 @@ module.exports = function(db, DataTypes) {
         // `password` varchar(100) DEFAULT NULL
         password: {
             type: DataTypes.STRING(50),
-            allowNull:      false,
+            allowNull: false,
             set: function (password) {
                 this.setDataValue('password', utils.md5(password));
             },
@@ -52,7 +56,7 @@ module.exports = function(db, DataTypes) {
         // `email` varchar DEFAULT NULL,
         email: {
             type: DataTypes.STRING,
-            allowNull:      false,
+            allowNull: false,
             unique: true,
             validate: {
                 isEmail: {
@@ -60,7 +64,10 @@ module.exports = function(db, DataTypes) {
                 },
                 isUnique: (email, done) => {
                     email = String(email).trim();
-                    const query = User.find({ where: {email: email}, attributes: ['userID']});
+                    const query = User.find({
+                        where: {email},
+                        attributes: ['userID']
+                    });
                     query
                         .then(record => {
                             const error = record ? new Error('Email уже занят') : null;
@@ -75,7 +82,7 @@ module.exports = function(db, DataTypes) {
         role: {
             type: DataTypes.ENUM('admin', 'user'),
             defaultValue: 'user',
-            allowNull:      false
+            allowNull: false
         },
 
         // `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -87,7 +94,8 @@ module.exports = function(db, DataTypes) {
     }, {
         instanceMethods: {
             samePassword: function (password) {
-                return this.password === utils.md5(password);            },
+                return this.password === utils.md5(password);
+            },
             isAdmin: function () {
                 return this.role === 'admin';
             }

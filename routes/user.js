@@ -114,6 +114,26 @@ module.exports = (router, config, container) => {
                     uploaduserid: userId
                 };
 
+            Promise.all([
+                Image.count({where: where}),
+                Image.findAll({
+                    where: where,
+                    offset: offset,
+                    limit: limit,
+                    order: 'id DESC'
+                })
+            ]).then((count, images) => {
+                res.render('user/gallery', {
+                    images: images,
+                    pagination: pager.build({
+                        currentPage: page,
+                        itemsCount: count,
+                        urlPrefix: '/my/'
+                    })
+                });
+            }).catch(next);
+
+            /*
             Image.count({where: where}).then(function (count) {
                 Image.findAll({
                     where: where,
@@ -131,6 +151,8 @@ module.exports = (router, config, container) => {
                     });
                 }).catch(next);
             }).catch(next);
+
+            */
         });
 
 };

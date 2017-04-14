@@ -19,13 +19,14 @@ class Validator {
         this.maxHeight = options.maxHeight || MAX_HEIGHT;
         this.maxWidth = options.maxWidth || MAX_WIDTH;
         this.maxSize = options.maxSize || MAX_SIZE;
+        this.maxSizeText = viewHelpers.fileSize(this.maxSize);
         this.allowedExt = options.allowedExt || ALLOWED_EXT;
         this.allowedMime = options.allowedMime || ALLOWED_MIME;
     }
 
     validateImageFile ({size, extension, mimetype}) {
         if (size > this.maxSize) {
-            return new Error(`Размер файла превышает ${MAX_SIZE_TEXT}`);
+            return new Error(`Размер файла превышает ${this.maxSizeText}`);
         }
 
         if (!this.isAllowedExtension(extension)) {

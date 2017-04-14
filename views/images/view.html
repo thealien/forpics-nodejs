@@ -20,17 +20,17 @@
 {% if images[0].group and images[1] %}
 <p class='group-title'>
     <b>Адрес группы картинок:</b>
-    <input size='50' value='{{baseUrl}}/images/{{images[0].path_date}}/{{images[0].group}}' readonly="readonly">
+    <input size='50' value='{{imageRouter.resolveGroupPageUrl(images[0], baseUrl)}}' readonly="readonly">
 </p>
 {% endif %}
 
 {% for image in images %}
 <div class='detail group'>
-    <a href='/{{paths.images}}/{{image.path_date}}/{{image.filename}}' target='_blank' class='poster_link'>
+    <a href='{{imageRouter.resolveImageUrl(image)}}' target='_blank' class='poster_link'>
         {% if image.preview %}
-        <img class='image' src='/{{paths.previews}}/{{image.path_date}}/{{image.filename}}' alt=''>
+        <img class='image' src='{{imageRouter.resolvePreviewUrl(image)}}' alt=''>
         {% else %}
-        <img class='image' src='/{{paths.images}}/{{image.path_date}}/{{image.filename}}' alt=''>
+        <img class='image' src='{{imageRouter.resolveImageUrl(image)}}' alt=''>
         {% endif %}
         <br>
         {{image.width}}px x {{image.height}}px, {{image.filesize|fileSize}}
@@ -38,24 +38,24 @@
     <div class='codes'>
         <div class='image'>
             <b>Прямой адрес:</b>
-            <input class='text' value='{{baseUrl}}/{{paths.images}}/{{image.path_date}}/{{image.filename}}' readonly="readonly">
+            <input class='text' value='{{imageRouter.resolveImageUrl(image, baseUrl)}}' readonly="readonly">
             <b>BB-код:</b>
-            <input  class='text' value='[url={{baseUrl}}/{{paths.images}}/{{image.path_date}}/{{image.filename}}][img]{{baseUrl}}/{{paths.images}}/{{image.path_date}}/{{image.filename}}[/img][/url]' readonly="readonly">
+            <input  class='text' value='[url={{imageRouter.resolveImageUrl(image, baseUrl)}}][img]{{imageRouter.resolveImageUrl(image, baseUrl)}}[/img][/url]' readonly="readonly">
         </div>
         {% if image.preview %}
         <div class='preview'>
             <b>Прямой адрес эскиза:</b>
-            <input  class='text' value='{{baseUrl}}/{{paths.previews}}/{{image.path_date}}/{{image.filename}}' readonly="readonly">
+            <input  class='text' value='{{imageRouter.resolvePreviewUrl(image, baseUrl)}}' readonly="readonly">
             <b>BB-код для эскиза:</b>
-            <input  class='text' value='[url={{baseUrl}}/{{paths.images}}/{{image.path_date}}/{{image.filename}}][img]{{baseUrl}}/{{paths.previews}}/{{image.path_date}}/{{image.filename}}[/img][/url]' readonly="readonly">
+            <input  class='text' value='[url={{imageRouter.resolveImageUrl(image, baseUrl)}}][img]{{imageRouter.resolvePreviewUrl(image, baseUrl)}}[/img][/url]' readonly="readonly">
         </div>
         {% endif %}
         {% if user && (user.userID == image.uploaduserid) %}
         <div>
             <b>Адрес удаления картинки:</b>
             <br>
-            <input class='text' style="display: inline; width:  330px;" value='{{baseUrl}}/delete/{{image.path_date}}/{{image.deleteGuid}}' readonly="readonly">
-            <form style='display: inline;' action="/delete/{{image.path_date}}/{{image.deleteGuid}}" method="post" onsubmit="return confirm('Удалить?');">
+            <input class='text' style="display: inline; width:  330px;" value='{{imageRouter.resolveDeletePageUrl(image, baseUrl)}}' readonly="readonly">
+            <form style='display: inline;' action="{{imageRouter.resolveDeletePageUrl(image)}}" method="post" onsubmit="return confirm('Удалить?');">
             <input type="submit" name="delete" value="удалить" style='display: inline;width: auto; cursor: pointer;'>
             </form>
         </div>
@@ -67,7 +67,7 @@
 
 {% if images[0].group and images[1] %}
 <div class='hr'></div>
-<textarea rows='10' style='width: 100%;'>{% for image in images %}{{baseUrl}}/{{paths.images}}/{{image.path_date}}/{{image.filename}}{% if not loop.last %}
+<textarea rows='10' style='width: 100%;'>{% for image in images %}{{imageRouter.resolveImageUrl(image, baseUrl)}}{% if not loop.last %}
 {% endif %}{% endfor %}
 </textarea>
 {% endif %}
