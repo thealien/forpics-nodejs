@@ -10,8 +10,6 @@
         "images": "i",
         "previews": "p"
     },
-    "protocol": "http",
-    "host": "forpics.ru",
 
     "filesFormField": "uploadfile[]"
 }

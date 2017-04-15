@@ -74,7 +74,6 @@ module.exports = (router, config, container) => {
                 if (!user) {
                     return next();
                 }
-
                 req.logIn(user, function (error) {
                     return error ? next(error) : res.redirect('/');
                 });
@@ -155,4 +154,4 @@ module.exports = (router, config, container) => {
             */
         });
 
-};
+};;

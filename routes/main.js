@@ -11,6 +11,7 @@ module.exports = (router, config, container) => {
     const app = container.require('app:core');
     const validator = container.require('image:validator');
     const processor = container.require('image:processor');
+    const imageRouter = container.require('image:router');
     const {Image} = container.require('app:models');
     const uploadConfig = config.imageProcess;
     const {filesFormField} = config.app;
@@ -41,10 +42,10 @@ module.exports = (router, config, container) => {
 
             if (processedCount === 1) {
                 // 1 image uploaded
-                location = `/image/${firstImage.path_date}/${firstImage.guid}`;
+                location = imageRouter.resolveImagePageUrl(firstImage);
             } else if (processedCount > 1) {
                 // group of images uploaded
-                location = `/images/${firstImage.path_date}/${firstImage.group}`;
+                location = imageRouter.resolveGroupPageUrl(firstImage);
             }
 
             res.redirect(location);
@@ -57,8 +58,8 @@ module.exports = (router, config, container) => {
             if (error) {
                 return res.status(500).send('Internal Server Error');
             }
-            res.locals = app.locals;
 
+            res.locals = app.locals;
             const type = req.get('json') ? 'json' : 'xml';
             const responseFns = {
                 json: sendJsonResponse,
@@ -81,10 +82,10 @@ module.exports = (router, config, container) => {
 
     function handleUpload (req, callback) {
         const receivedFiles = [].concat(req.files[filesFormField]);
-        let rejectedImages = [],
-            acceptedImages = [],
-            processedImages = [],
-            steps = [];
+        const rejectedImages = [];
+        const processedImages = [];
+        const steps = [];
+        let acceptedImages = [];
 
         // 1. Filter files by allowed dimensions
         steps.push(callback => {
@@ -250,7 +251,6 @@ module.exports = (router, config, container) => {
     }
 
     function sendJsonResponse (res, processedImages = [], rejectedImages = []) {
-        const {baseUrl, paths} = res.locals;
         const result = [];
 
         rejectedImages.forEach(image => {
@@ -259,17 +259,15 @@ module.exports = (router, config, container) => {
             }
         });
 
+        const {baseUrl} = res.locals;
         processedImages.forEach(image => {
+            const {width, height, size, pwidth, pheight, psize} = image;
             result.push({
-                url: `${baseUrl}/${paths.images}/${image.path_date}/${image.filename}`,
-                delurl: `${baseUrl}/delete/${image.path_date}/${image.deleteGuid}`,
-                width: image.width,
-                height: image.height,
-                size: image.size,
-                preview_url: image.psize ? `${baseUrl}/${paths.previews}/${image.path_date}/${image.filename}` : '',
-                pwidth: image.pwidth || '',
-                pheight: image.pheight || '',
-                psize: image.psize || ''
+                url: imageRouter.resolveImageUrl(image, baseUrl),
+                delurl: imageRouter.resolveDeletePageUrl(image, baseUrl),
+                preview_url: psize ?  imageRouter.resolveImagePreviewUrl(image, baseUrl) : '',
+                width, height, size,
+                pwidth, pheight, psize
             });
         });
 
@@ -279,12 +277,13 @@ module.exports = (router, config, container) => {
     }
 
     function resolveUseragentId (useragent = '') {
-        return String(useragent).indexOf('ForPicsUploader') !==-1  ? 1 : 0;
+        return String(useragent).indexOf('ForPicsUploader') !== -1 ? 1 : 0;
     }
 
     function getExtension (filename) {
         return path.extname(filename).replace(/^\./, '');
     }
+
 };
 
 

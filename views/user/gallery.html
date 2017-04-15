@@ -18,11 +18,11 @@ app.active_menu = 'my';
         <div class="col s12 m4 l3">
             <div class="card small">
                 <div class="card-image waves-effect waves-block waves-light">
-                    <a href='/image/{{ image.path_date }}/{{ image.guid }}' class='poster_link'>
+                    <a href='{{imageRouter.resolveImagePageUrl(image)}}' class='poster_link'>
                         {% if image.preview %}
-                        <img class='activator' src='/{{paths.previews}}/{{image.path_date}}/{{image.filename}}' alt=''>
+                        <img class='activator' src='{{imageRouter.resolvePreviewUrl(image)}}' alt=''>
                         {% else %}
-                        <img class='activator' src='/{{paths.images}}/{{image.path_date}}/{{image.filename}}' alt=''>
+                        <img class='activator' src='{{imageRouter.resolveImageUrl(image)}}' alt=''>
                         {% endif %}
                     </a>
                 </div>
@@ -32,13 +32,13 @@ app.active_menu = 'my';
                 <div class="card-reveal">
                     <span class="card-title grey-text text-darken-4">{{ image.originalfilename|e}}<i class="material-icons right">close</i></span>
                     <p>
-                        <input class='text' value='{{baseUrl}}/{{paths.images}}/{{image.path_date}}/{{image.filename}}' readonly="readonly">
+                        <input class='text' value='{{imageRouter.resolveImageUrl(image, baseUrl)}}' readonly="readonly">
                         {% if image.preview %}
-                        <input  class='text' value='{{baseUrl}}/{{paths.previews}}/{{image.path_date}}/{{image.filename}}' readonly="readonly">
+                        <input  class='text' value='{{imageRouter.resolvePreviewUrl(image, baseUrl)}}' readonly="readonly">
                         {% endif %}
                     </p>
 
-                    <a href='{{baseUrl}}/{{paths.images}}/{{image.path_date}}/{{image.filename}}' target='_blank' class='poster_link'>
+                    <a href='{{imageRouter.resolveImageUrl(image, baseUrl)}}' target='_blank' class='poster_link'>
                         {{image.width}}px x {{image.height}}px, {{image.filesize|fileSize}}
                     </a>
 

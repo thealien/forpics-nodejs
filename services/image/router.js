@@ -44,6 +44,14 @@ class Router {
         return `/${this.paths.previews}/${image.path_date}/${image.filename}`;
     }
 
+    resolveImagePageUrl (image, baseUrl = '') {
+        return baseUrl + this.resolveImagePageBaseUrl(image);
+    }
+
+    resolveImagePageBaseUrl (image) {
+        return `/image/${image.path_date}/${image.guid}`;
+    }
+
     /**
      *
      * @param {Object} image

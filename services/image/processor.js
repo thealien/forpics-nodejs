@@ -5,6 +5,7 @@ const async = require('async');
 const fs = require('fs');
 const gm = require('gm');
 const utils = require('../../utils');
+const path = require('path');
 
 class Processor {
 
@@ -142,7 +143,6 @@ class Processor {
 
         async.series(steps, error => {
             if (error) {
-                console.log(error);
                 callback(error);
                 fs.unlink(targetImage, () => {});
                 return;
@@ -187,8 +187,8 @@ class Processor {
         const datePath = this.getDatePath();
         const pathConfig = this.config.path;
 
-        const iPath = pathConfig.image + '/' + datePath;
-        const pPath = pathConfig.preview + '/' + datePath;
+        const iPath = `${pathConfig.image}${path.sep}${datePath}`;
+        const pPath = `${pathConfig.preview}${path.sep}${datePath}`;
         const result = {
             image: iPath,
             preview: pPath,
@@ -199,25 +199,21 @@ class Processor {
             return callback(null, result);
         }
 
-        async.parallel([
-            callback => {
-                fs.exists(iPath, exists => {
+        async.parallel([iPath, pPath].map(path => {
+            return callback => {
+                fs.exists(path, exists => {
                     if (exists) {
                         return callback(null, true);
                     }
-                    fs.mkdir(iPath, 0o775, callback);
+                    fs.mkdir(path, 0o775, error => {
+                        if (error && error.code === 'EEXIST') {
+                            error = null;
+                        }
+                        callback(error);
+                    });
                 });
-            },
-            callback => {
-                fs.exists(pPath, exists => {
-                    if (exists) {
-                        callback(null, true);
-                    } else {
-                        fs.mkdir(pPath, 0o775, callback);
-                    }
-                });
-            }
-        ], error => {
+            };
+        }), error => {
             processor.checkedDatePaths[datePath] = !error;
             callback(error, result);
         });

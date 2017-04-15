@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const flash = require('connect-flash');
+const ipv4 = require('express-ipv4');
 
 const initSwig = require('./middleware/swig');
 const initSessions = require('./middleware/sessions');
@@ -21,6 +22,8 @@ module.exports = (app, config, container) => {
     if (!app.isProd) {
         app.use(morgan('dev'));
     }
+
+    app.use(ipv4());
 
     // forms handling
     app.use(bodyParser.json());
