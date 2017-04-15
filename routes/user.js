@@ -121,7 +121,7 @@ module.exports = (router, config, container) => {
                     limit: limit,
                     order: 'id DESC'
                 })
-            ]).then((count, images) => {
+            ]).then(([count, images]) => {
                 res.render('user/gallery', {
                     images: images,
                     pagination: pager.build({
