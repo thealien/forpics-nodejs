@@ -5,7 +5,7 @@ const LinkPager = require('../views/widgets/LinkPager.js');
 module.exports = (router, config, container) => {
     const passport = container.require('app:passport');
     const {User, Image} = container.require('app:models');
-    const pager = LinkPager.create(20, 10);
+    const pager = LinkPager.create(2, 3);
 
     const guestRequired = (req, res, next) => req.isAuthenticated() ? res.redirect('/') : next();
     const authRequired = (req, res, next) => !req.isAuthenticated() ? res.redirect('/') : next();

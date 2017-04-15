@@ -3,73 +3,89 @@
 {% block add_js %}
 <script>
     app.active_menu = 'my';
-    $(function(){
-        $('div.codes input.text,p.group-title>input').bind('focus click mouseover', function(){
-            this.select(0,0);
+    $(function () {
+        $('div.codes input.text,p.group-title>input').bind('focus click mouseover', function () {
+            this.select(0, 0);
         });
     });
 </script>
 {% endblock %}
 
 {% block content %}
+<div>
+    <div class="row">
 
-{% if messages.rejectedImages %}
-    {% include '../snippet/rejected-images.html' with messages only %}
-{% endif %}
-
-{% if images[0].group and images[1] %}
-<p class='group-title'>
-    <b>Адрес группы картинок:</b>
-    <input size='50' value='{{imageRouter.resolveGroupPageUrl(images[0], baseUrl)}}' readonly="readonly">
-</p>
-{% endif %}
-
-{% for image in images %}
-<div class='detail group'>
-    <a href='{{imageRouter.resolveImageUrl(image)}}' target='_blank' class='poster_link'>
-        {% if image.preview %}
-        <img class='image' src='{{imageRouter.resolvePreviewUrl(image)}}' alt=''>
-        {% else %}
-        <img class='image' src='{{imageRouter.resolveImageUrl(image)}}' alt=''>
+        {% if messages.rejectedImages %}
+        {% include '../snippet/rejected-images.html' with messages only %}
         {% endif %}
-        <br>
-        {{image.width}}px x {{image.height}}px, {{image.filesize|fileSize}}
-    </a>
-    <div class='codes'>
-        <div class='image'>
-            <b>Прямой адрес:</b>
-            <input class='text' value='{{imageRouter.resolveImageUrl(image, baseUrl)}}' readonly="readonly">
-            <b>BB-код:</b>
-            <input  class='text' value='[url={{imageRouter.resolveImageUrl(image, baseUrl)}}][img]{{imageRouter.resolveImageUrl(image, baseUrl)}}[/img][/url]' readonly="readonly">
-        </div>
-        {% if image.preview %}
-        <div class='preview'>
-            <b>Прямой адрес эскиза:</b>
-            <input  class='text' value='{{imageRouter.resolvePreviewUrl(image, baseUrl)}}' readonly="readonly">
-            <b>BB-код для эскиза:</b>
-            <input  class='text' value='[url={{imageRouter.resolveImageUrl(image, baseUrl)}}][img]{{imageRouter.resolvePreviewUrl(image, baseUrl)}}[/img][/url]' readonly="readonly">
+
+        {% if images[1] %}
+        <div class="col s6 offset-s4">
+            Адрес группы картинок: <input size='50' value='{{imageRouter.resolveGroupPageUrl(images[0], baseUrl)}}' readonly="readonly">
         </div>
         {% endif %}
-        {% if user && (user.userID == image.uploaduserid) %}
-        <div>
-            <b>Адрес удаления картинки:</b>
-            <br>
-            <input class='text' style="display: inline; width:  330px;" value='{{imageRouter.resolveDeletePageUrl(image, baseUrl)}}' readonly="readonly">
-            <form style='display: inline;' action="{{imageRouter.resolveDeletePageUrl(image)}}" method="post" onsubmit="return confirm('Удалить?');">
-            <input type="submit" name="delete" value="удалить" style='display: inline;width: auto; cursor: pointer;'>
-            </form>
+
+        {% for image in images %}
+        <div class="col s12 center-align">
+            <h5>{{ image.originalfilename|e}}</h5>
+        </div>
+        <div class="col s12 m4 right-align">
+            <small>{{ image.date|date('Y.m.d') }} / {{ image.ip }}</small>
+            <a href="{{imageRouter.resolveImageUrl(image)}}" target="_blank">
+                {% if image.preview && image.size > 300*1024 %}
+                <img class='card responsive-img medium z-depth-2' src='{{imageRouter.resolvePreviewUrl(image)}}' alt=''>
+                {% else %}
+                <img class='card responsive-img z-depth-2' style="max-height: 400px" src='{{imageRouter.resolveImageUrl(image)}}'
+                     alt=''>
+                {% endif %}
+            </a>
+        </div>
+        <div class="col s12 m8">
+            <div class='image'>
+                Прямой адрес:
+                <input class='blue lighten-5 black-text' value='{{imageRouter.resolveImageUrl(image, baseUrl)}}' readonly="readonly">
+                BB-код:
+                <input class='blue lighten-5 black-text'
+                       value='[url={{imageRouter.resolveImageUrl(image, baseUrl)}}][img]{{imageRouter.resolveImageUrl(image, baseUrl)}}[/img][/url]'
+                       readonly="readonly">
+            </div>
+
+            {% if image.preview %}
+            <div class='preview'>
+                Прямой адрес эскиза:
+                <input class='green lighten-5 black-text' value='{{imageRouter.resolvePreviewUrl(image, baseUrl)}}' readonly="readonly">
+                BB-код для эскиза:
+                <input class='green lighten-5 black-text'
+                       value='[url={{imageRouter.resolveImageUrl(image, baseUrl)}}][img]{{imageRouter.resolvePreviewUrl(image, baseUrl)}}[/img][/url]'
+                       readonly="readonly">
+            </div>
+            {% endif %}
+
+            {% if user && (user.userID == image.uploaduserid) %}
+            <div>
+                Адрес удаления картинки:
+                <br>
+                <input class='red lighten-5 black-text' value='{{imageRouter.resolveDeletePageUrl(image, baseUrl)}}' readonly="readonly">
+                <form style='display: inline;' action="{{imageRouter.resolveDeletePageUrl(image)}}" method="post"
+                      onsubmit="return confirm('Удалить?');">
+                    <input type="submit" name="delete" value="удалить"
+                           style='display: inline;width: auto; cursor: pointer;'>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+        &nbsp;
+        <div class="col m10 s12 offset-m1 divider"></div>
+        {% endfor %}
+
+        {% if images[1] %}
+        <div class="col s12">
+            <h5>Адреса всех картинок</h5>
+    <textarea rows='10' class="materialize-textarea">{% for image in images %}{{imageRouter.resolveImageUrl(image, baseUrl)}}{% if not loop.last %}
+    {% endif %}{% endfor %}</textarea>
         </div>
         {% endif %}
+
     </div>
-    <div class='clear'></div>
 </div>
-{% endfor %}
-
-{% if images[0].group and images[1] %}
-<div class='hr'></div>
-<textarea rows='10' style='width: 100%;'>{% for image in images %}{{imageRouter.resolveImageUrl(image, baseUrl)}}{% if not loop.last %}
-{% endif %}{% endfor %}
-</textarea>
-{% endif %}
-
 {% endblock %}
