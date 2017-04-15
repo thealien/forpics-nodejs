@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block content %}
-<div>
+<div class="container">
     <div class="row">
 
         {% if messages.rejectedImages %}
@@ -20,17 +20,17 @@
         {% endif %}
 
         {% if images[1] %}
-        <div class="col s6 offset-s4">
+        <!--div class="col s6 offset-s4">
             Адрес группы картинок: <input size='50' value='{{imageRouter.resolveGroupPageUrl(images[0], baseUrl)}}' readonly="readonly">
-        </div>
+        </div-->
         {% endif %}
 
         {% for image in images %}
         <div class="col s12 center-align">
-            <h5>{{ image.originalfilename|e}}</h5>
+            <h5><a href="{{imageRouter.resolveImagePageUrl(image)}}" target="_blank">{{ image.originalfilename|e}}</a></h5>
         </div>
-        <div class="col s12 m4 right-align">
-            <small>{{ image.date|date('Y.m.d') }} / {{ image.ip }}</small>
+        <div class="col s12 m4">
+            <div>{{ image.date|date('Y.m.d') }} / {{ image.ip }}</div>
             <a href="{{imageRouter.resolveImageUrl(image)}}" target="_blank">
                 {% if image.preview && image.size > 300*1024 %}
                 <img class='card responsive-img medium z-depth-2' src='{{imageRouter.resolvePreviewUrl(image)}}' alt=''>
@@ -40,12 +40,12 @@
                 {% endif %}
             </a>
         </div>
-        <div class="col s12 m8">
+        <div class="col s12 m8 codes">
             <div class='image'>
                 Прямой адрес:
-                <input class='blue lighten-5 black-text' value='{{imageRouter.resolveImageUrl(image, baseUrl)}}' readonly="readonly">
+                <input class='blue lighten-5 black-text text' value='{{imageRouter.resolveImageUrl(image, baseUrl)}}' readonly="readonly">
                 BB-код:
-                <input class='blue lighten-5 black-text'
+                <input class='blue lighten-5 black-text text'
                        value='[url={{imageRouter.resolveImageUrl(image, baseUrl)}}][img]{{imageRouter.resolveImageUrl(image, baseUrl)}}[/img][/url]'
                        readonly="readonly">
             </div>
@@ -53,9 +53,9 @@
             {% if image.preview %}
             <div class='preview'>
                 Прямой адрес эскиза:
-                <input class='green lighten-5 black-text' value='{{imageRouter.resolvePreviewUrl(image, baseUrl)}}' readonly="readonly">
+                <input class='green lighten-5 black-text text' value='{{imageRouter.resolvePreviewUrl(image, baseUrl)}}' readonly="readonly">
                 BB-код для эскиза:
-                <input class='green lighten-5 black-text'
+                <input class='green lighten-5 black-text text'
                        value='[url={{imageRouter.resolveImageUrl(image, baseUrl)}}][img]{{imageRouter.resolvePreviewUrl(image, baseUrl)}}[/img][/url]'
                        readonly="readonly">
             </div>
@@ -64,13 +64,7 @@
             {% if user && (user.userID == image.uploaduserid) %}
             <div>
                 Адрес удаления картинки:
-                <br>
-                <input class='red lighten-5 black-text' value='{{imageRouter.resolveDeletePageUrl(image, baseUrl)}}' readonly="readonly">
-                <form style='display: inline;' action="{{imageRouter.resolveDeletePageUrl(image)}}" method="post"
-                      onsubmit="return confirm('Удалить?');">
-                    <input type="submit" name="delete" value="удалить"
-                           style='display: inline;width: auto; cursor: pointer;'>
-                </form>
+                <input style="display: inline-block" class='red lighten-5 black-text text' value='{{imageRouter.resolveDeletePageUrl(image, baseUrl)}}' readonly="readonly">
             </div>
             {% endif %}
         </div>
@@ -82,7 +76,7 @@
         <div class="col s12">
             <h5>Адреса всех картинок</h5>
     <textarea rows='10' class="materialize-textarea">{% for image in images %}{{imageRouter.resolveImageUrl(image, baseUrl)}}{% if not loop.last %}
-    {% endif %}{% endfor %}</textarea>
+{% endif %}{% endfor %}</textarea>
         </div>
         {% endif %}
 
