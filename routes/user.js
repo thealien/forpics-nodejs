@@ -124,34 +124,13 @@ module.exports = (router, config, container) => {
             ]).then(([count, images]) => {
                 res.render('user/gallery', {
                     images: images,
-                    pagination: pager.build({
+                    pagination: images.length < count ? pager.build({
                         currentPage: page,
                         itemsCount: count,
                         urlPrefix: '/my/'
-                    })
+                    }) : ''
                 });
             }).catch(next);
-
-            /*
-            Image.count({where: where}).then(function (count) {
-                Image.findAll({
-                    where: where,
-                    offset: offset,
-                    limit: limit,
-                    order: 'id DESC'
-                }).then(function (images) {
-                    res.render('user/gallery', {
-                        images: images,
-                        pagination: pager.build({
-                            currentPage: page,
-                            itemsCount: count,
-                            urlPrefix: '/my/'
-                        })
-                    });
-                }).catch(next);
-            }).catch(next);
-
-            */
         });
 
-};;
+};

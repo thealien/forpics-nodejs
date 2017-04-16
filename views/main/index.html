@@ -1,49 +1,10 @@
 {% extends '../layout.html' %}
 
-{% block add_js %}
-<script>
-(function(window){
-    var $ = window.$,
-        $uploadBtn = $('#upload-btn'),
-        $fileInput = $('#upload').find('.file');
-
-    $fileInput.hover(function() {
-        $uploadBtn.addClass('hover');
-    }, function() {
-        $uploadBtn.removeClass('hover');
-    });
-})(window);
-
-function onFilesSelected (input) {
-    var form = input.form;
-    $('.progress.upload').css('visibility', 'visible');
-    form.submit();
-}
-</script>
-{% endblock %}
-
 {% block content %}
 
 <div class="progress upload">
     <div class="indeterminate"></div>
 </div>
+{% include '../snippet/upload-form.html'%}
 
-<div id="upload-wrapper">
-    <div id="upload" title="Выбрать файлы для загрузки">
-        <div id="upload-btn"></div>
-        <form action='/up/' method='post' enctype='multipart/form-data'>
-            <input maxlength="20" required="required" class='file' type='file' name="uploadfile[]" multiple="multiple" accept="image/*" onchange="onFilesSelected(this);">
-        </form>
-    </div>
-
-    {% if messages.rejectedImages %}
-    <div class="container">
-        {% include '../snippet/rejected-images.html' with messages only %}
-    </div>
-    {% endif %}
-
-    <div class="reqs">
-        Разрешены JPG, GIF и PNG. Не более 5 MB.
-    </div>
-</div>
 {% endblock %}

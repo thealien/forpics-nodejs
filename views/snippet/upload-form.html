@@ -1,0 +1,19 @@
+<div id="upload-wrapper">
+    <div id="upload" title="Выбрать файлы для загрузки">
+        <div id="upload-btn"></div>
+        <form action='/up/' method='post' enctype='multipart/form-data'>
+            <input maxlength="20" required="required" class='file' type='file' name="uploadfile[]" multiple="multiple"
+                   accept="image/*" onchange="window.app.upload(this);">
+        </form>
+    </div>
+
+    {% if messages.rejectedImages %}
+    <div class="container">
+        {% include 'snippet/rejected-images.html' with messages only %}
+    </div>
+    {% endif %}
+
+    <div class="reqs">
+        Разрешены JPG, GIF и PNG. Не более 5 MB.
+    </div>
+</div>

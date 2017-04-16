@@ -9,6 +9,36 @@
         $('div.codes input.text').bind('focus click mouseover', function () {
             this.select(0, 0);
         });
+
+        $('div.codes a.delete').click(function () {
+            if (!confirm('Удалить?')) {
+                return false;
+            }
+            var a = $(this);
+            a.prop('disabled', true);
+            $.ajax({
+                url: a.attr('href'),
+                type: 'post',
+                dataType: 'json',
+                success: function (data) {
+                    a.prop('disabled', false);
+                    var success = data.success;
+                    var text = success ? 'Удалено' : data.message;
+                    Materialize.toast(text, 1000);
+                    if (success) {
+                        a.parents('div.card').hide().remove();
+                        if (!$('div.card').length) {
+                            window.location.reload();
+                        }
+                    }
+                },
+                error: function (error) {
+                    console.error(error);
+                    a.prop('disabled', false);
+                }
+            });
+            return false;
+        });
     });
 </script>
 {% endblock %}
@@ -32,7 +62,7 @@
                 </div>
 
                 <div class="card-content">
-                    <a class="right btn-floating halfway-fab waves-effect waves-light gray activator" title="Инфо">
+                    <a class="right btn-floating halfway-fab waves-effect waves-light grey activator" title="Инфо">
                         <i class="material-icons right">more_vert</i>
                     </a>
                     <span class="card-title truncate" title="{{ image.originalfilename|e}}">{{ image.originalfilename|e}}</span>
@@ -50,17 +80,13 @@
                         <input class='orange lighten-5 black-text text'
                                value='{{imageRouter.resolvePreviewUrl(image, baseUrl)}}' readonly="readonly">
                         {% endif %}
-
-
-                        <a class="right btn-floating halfway-fab waves-effect waves-light red delete" title="Удалить" href="{{imageRouter.resolveDeletePageUrl(image)}}">
-                            <i class="material-icons right">close</i>
-                        </a>
-
                         <small>{{image.width}} x {{image.height}}, {{image.filesize|fileSize}}</small>
                         <br>
                         <small>{{ image.date|date('Y.m.d') }} @ {{ image.ip }}</small>
                     </p>
-
+                    <a class="left btn-floating red delete" title="Удалить" href="{{imageRouter.resolveDeletePageUrl(image)}}">
+                        <i class="material-icons right">close</i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -73,7 +99,15 @@
     </div>
 
     {% else %}
-    NO
+    <div class="row">
+        <div class="col s12 center align">
+            <div class="progress upload">
+                <div class="indeterminate"></div>
+            </div>
+            <h6>Нет загруженных картинок. Для добавления воспользуйтесь кнопкой ниже.</h6>
+            {% include '../snippet/upload-form.html'%}
+        </div>
+    <div>
     {% endif %}
 
 </div>

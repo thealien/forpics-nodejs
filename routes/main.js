@@ -192,7 +192,7 @@ module.exports = (router, config, container) => {
         return {
             resize: uploadConfig.resize[+params.resize] || null,
             rotate: uploadConfig.rotate[+params.rotate] || null,
-            preview: uploadConfig.preview[+params.preview] || uploadConfig.preview[3],
+            preview: uploadConfig.preview[+params.preview] || uploadConfig.preview[4],
             normalize: !!params.normalize
         };
     }
