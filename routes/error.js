@@ -4,8 +4,6 @@ module.exports = (router, config, container) => {
     const app = container.require('app:core');
     const logger = container.require('app:logger');
 
-    // error handlers
-
     // catch 404 and forward to error handler
     router.use((req, res, next) => {
         const err = new Error('Not Found');
@@ -13,28 +11,21 @@ module.exports = (router, config, container) => {
         next(err);
     });
 
-
-    // development error handler
-    // will print stacktrace
-    if (!app.isProd) {
-        router.use((err, req, res, next) => {
-            logger.error(err);
-            res.status(err.status || 500);
-            res.render('error', {
-                message: err.message,
-                error: err
-            });
-        });
-    }
-
-    // production error handler
-    // no stacktraces leaked to user
     router.use((err, req, res, next) => {
         logger.error(err);
         res.status(err.status || 500);
-        res.render('error', {
+
+        const json = req.is('json') || req.xhr;
+        if (json) {
+            return res.json({
+                success: false,
+                error: err.message
+            });
+        }
+
+        return res.render('error', {
             message: err.message,
-            error: {}
+            error: app.isProd ? {} : err
         });
     });
 

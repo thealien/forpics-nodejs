@@ -62,7 +62,6 @@ module.exports = (router, config, container) => {
     router.route('/delete/:path_date/:guid')
         .post((req, res, next) => {
             const {path_date, guid} = req.params;
-
             const query = Image.find({
                 where: {
                     path_date,
@@ -72,12 +71,22 @@ module.exports = (router, config, container) => {
             query
                 .then(image => {
                     if (!image) {
-                        return res.status(404).send('Not found');
+                        const error = new Error('Image not found');
+                        error.status = 404;
+                        return next(error);
                     }
 
                     processor.delete(image, () => {
                         image.destroy()
-                            .then(() => res.redirect('/my/'))
+                            .then(() => {
+                                const json = req.is('json') || req.xhr;
+                                if (json) {
+                                    return res.json({
+                                        success: true
+                                    });
+                                }
+                                return res.redirect('/my/');
+                            })
                             .catch(next);
                     });
 

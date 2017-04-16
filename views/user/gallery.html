@@ -3,16 +3,20 @@
 {% block nav_title %}Мои изображения{% endblock %}
 
 {% block add_js %}
-<script>
-app.active_menu = 'my';
+<script type="text/javascript">
+    app.active_menu = 'my';
+    $(function () {
+        $('div.codes input.text').bind('focus click mouseover', function () {
+            this.select(0, 0);
+        });
+    });
 </script>
 {% endblock %}
 
 {% block content %}
 
-{% if images.length %}
-
-<div>
+<div class="container">
+    {% if images.length %}
     <div class="row">
         {% for image in images%}
         <div class="col s12 m4 l3">
@@ -20,27 +24,31 @@ app.active_menu = 'my';
                 <div class="card-image waves-effect waves-block waves-light">
                     <a href='{{imageRouter.resolveImagePageUrl(image)}}' class='poster_link'>
                         {% if image.preview %}
-                        <img class='activator' src='{{imageRouter.resolvePreviewUrl(image)}}' alt=''>
+                        <img src='{{imageRouter.resolvePreviewUrl(image)}}' alt=''>
                         {% else %}
-                        <img class='activator' src='{{imageRouter.resolveImageUrl(image)}}' alt=''>
+                        <img src='{{imageRouter.resolveImageUrl(image)}}' alt=''>
                         {% endif %}
                     </a>
                 </div>
                 <div class="card-content">
-                    <span class="card-title activator grey-text text-darken-4">{{ image.originalfilename|e}}<i class="material-icons right">more_vert</i></span>
+                    <a class="right btn-floating halfway-fab waves-effect waves-light gray activator">
+                        <i class="material-icons right">more_vert</i>
+                    </a>
+                    <span class="card-title truncate" title="{{ image.originalfilename|e}}">{{ image.originalfilename|e}}</span>
                 </div>
-                <div class="card-reveal">
-                    <span class="card-title grey-text text-darken-4">{{ image.originalfilename|e}}<i class="material-icons right">close</i></span>
+                <div class="card-reveal codes">
+                    <span class="card-title grey-text text-darken-4">
+                        {{image.width}} x {{image.height}}, {{image.filesize|fileSize}}
+                        <i class="material-icons right">close</i>
+                    </span>
                     <p>
-                        <input class='text' value='{{imageRouter.resolveImageUrl(image, baseUrl)}}' readonly="readonly">
+                        <input class='blue lighten-5 black-text text'
+                               value='{{imageRouter.resolveImageUrl(image, baseUrl)}}' readonly="readonly">
                         {% if image.preview %}
-                        <input  class='text' value='{{imageRouter.resolvePreviewUrl(image, baseUrl)}}' readonly="readonly">
+                        <input class='orange lighten-5 black-text text'
+                               value='{{imageRouter.resolvePreviewUrl(image, baseUrl)}}' readonly="readonly">
                         {% endif %}
                     </p>
-
-                    <a href='{{imageRouter.resolveImageUrl(image, baseUrl)}}' target='_blank' class='poster_link'>
-                        {{image.width}}px x {{image.height}}px, {{image.filesize|fileSize}}
-                    </a>
 
                 </div>
             </div>
@@ -52,36 +60,10 @@ app.active_menu = 'my';
             {{ pagination.render() }}
         </div>
     </div>
-</div>
-{% else %}
-NO
-{% endif %}
 
-
-
-<!--div class="row">
-    {% if images.length %}
-        {% for image in images%}
-        <div class="image">
-            <a href='/image/{{ image.path_date }}/{{ image.guid }}' class='poster_link'>
-                {% if image.preview %}
-                <img class='image' src='/{{paths.previews}}/{{image.path_date}}/{{image.filename}}' alt=''>
-                {% else %}
-                <img class='image' src='/{{paths.images}}/{{image.path_date}}/{{image.filename}}' alt=''>
-                {% endif %}
-            </a>
-            <br>
-            <a href='{{baseUrl}}/{{paths.previews}}/{{image.path_date}}/{{image.filename}}' target='_blank' class='poster_link'>
-                {{image.width}} x {{image.height}}, {{image.filesize|fileSize}}
-            </a>
-        </div>
-        {% endfor %}
-        <div class="paginator">
-        {{ pagination.render() }}
-        </div>
     {% else %}
-    <h5>У вас нет залитых картинок</h5>
+    NO
     {% endif %}
-    <br>
-</div-->
+
+</div>
 {% endblock %}

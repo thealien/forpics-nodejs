@@ -1,11 +1,39 @@
 {% extends "../layout.html" %}
 
 {% block add_js %}
-<script>
+<script type="text/javascript">
     app.active_menu = 'my';
     $(function () {
         $('div.codes input.text,p.group-title>input').bind('focus click mouseover', function () {
             this.select(0, 0);
+        });
+
+        $('div.codes a.delete').click(function () {
+
+            var a = $(this);
+            a.prop('disabled', true);
+            $.ajax({
+                url: a.attr('href'),
+                type: 'post',
+                dataType: 'json',
+                success: function (data) {
+                    a.prop('disabled', false);
+                    var success = data.success;
+                    var text = success ? 'Удалено' : data.message;
+                    Materialize.toast(text, 1000);
+                    if (success) {
+                        a.parents('div.section').hide().remove();
+                        if (!$('div.section').length) {
+                            window.location = app.userId ? '/my/' : '/';
+                        }
+                    }
+                },
+                error: function (error) {
+                    console.error(error);
+                    a.prop('disabled', false);
+                }
+            });
+            return false;
         });
     });
 </script>
@@ -26,50 +54,71 @@
         {% endif %}
 
         {% for image in images %}
-        <div class="col s12 center-align">
-            <h5><a href="{{imageRouter.resolveImagePageUrl(image)}}" target="_blank">{{ image.originalfilename|e}}</a></h5>
-        </div>
-        <div class="col s12 m4">
-            <div>{{ image.date|date('Y.m.d') }} / {{ image.ip }}</div>
-            <a href="{{imageRouter.resolveImageUrl(image)}}" target="_blank">
-                {% if image.preview && image.size > 300*1024 %}
-                <img class='card responsive-img medium z-depth-2' src='{{imageRouter.resolvePreviewUrl(image)}}' alt=''>
-                {% else %}
-                <img class='card responsive-img z-depth-2' style="max-height: 400px" src='{{imageRouter.resolveImageUrl(image)}}'
-                     alt=''>
+        <div class="section">
+            <div class="col s12 center-align">
+                <h5><a href="{{imageRouter.resolveImagePageUrl(image)}}" target="_blank">{{
+                    image.originalfilename|e}}</a></h5>
+            </div>
+            <div class="col s12 m4">
+                <div>{{image.width}} x {{image.height}}, {{image.filesize|fileSize}}</div>
+                <div class="hide-on-med-and-up">
+                    <small>{{ image.date|date('Y.m.d') }} @ {{ image.ip }}</small>
+                </div>
+                <a href="{{imageRouter.resolveImageUrl(image)}}" target="_blank">
+                    {% if image.preview && image.filesize > 300*1024 %}
+                    <img width="100%" class='z-depth-2'
+                         src='{{imageRouter.resolvePreviewUrl(image)}}'
+                         alt=''>
+                    {% else %}
+                    <img width="100%" class='z-depth-2' style="max-height: 400px"
+                         src='{{imageRouter.resolveImageUrl(image)}}'
+                         alt=''>
+                    {% endif %}
+                </a>
+                <div class="hide-on-small-only">
+                    <small>{{ image.date|date('Y.m.d') }} @ {{ image.ip }}</small>
+                </div>
+            </div>
+            <div class="col s12 m8 codes">
+                <div class='image'>
+                    Прямой адрес:
+                    <input class='blue lighten-5 black-text text'
+                           value='{{imageRouter.resolveImageUrl(image, baseUrl)}}' readonly="readonly">
+                    BB-код:
+                    <input class='blue lighten-5 black-text text'
+                           value='[url={{imageRouter.resolveImageUrl(image, baseUrl)}}][img]{{imageRouter.resolveImageUrl(image, baseUrl)}}[/img][/url]'
+                           readonly="readonly">
+                </div>
+
+                {% if image.preview %}
+                <div class='preview'>
+                    Прямой адрес эскиза:
+                    <input class='orange lighten-5 black-text text'
+                           value='{{imageRouter.resolvePreviewUrl(image, baseUrl)}}' readonly="readonly">
+                    BB-код для эскиза:
+                    <input class='orange lighten-5 black-text text'
+                           value='[url={{imageRouter.resolveImageUrl(image, baseUrl)}}][img]{{imageRouter.resolvePreviewUrl(image, baseUrl)}}[/img][/url]'
+                           readonly="readonly">
+                </div>
                 {% endif %}
-            </a>
-        </div>
-        <div class="col s12 m8 codes">
-            <div class='image'>
-                Прямой адрес:
-                <input class='blue lighten-5 black-text text' value='{{imageRouter.resolveImageUrl(image, baseUrl)}}' readonly="readonly">
-                BB-код:
-                <input class='blue lighten-5 black-text text'
-                       value='[url={{imageRouter.resolveImageUrl(image, baseUrl)}}][img]{{imageRouter.resolveImageUrl(image, baseUrl)}}[/img][/url]'
-                       readonly="readonly">
-            </div>
 
-            {% if image.preview %}
-            <div class='preview'>
-                Прямой адрес эскиза:
-                <input class='green lighten-5 black-text text' value='{{imageRouter.resolvePreviewUrl(image, baseUrl)}}' readonly="readonly">
-                BB-код для эскиза:
-                <input class='green lighten-5 black-text text'
-                       value='[url={{imageRouter.resolveImageUrl(image, baseUrl)}}][img]{{imageRouter.resolvePreviewUrl(image, baseUrl)}}[/img][/url]'
-                       readonly="readonly">
+                {% if user && (user.userID == image.uploaduserid) %}
+                <div class="row">
+                    <div class="col s12">
+                        Адрес удаления картинки:
+                    </div>
+                    <div class="col s10">
+                        <input style="display: inline-block" class='red lighten-5 black-text text'
+                               value='{{imageRouter.resolveDeletePageUrl(image, baseUrl)}}' readonly="readonly">
+                    </div>
+                    <div class="col s2 valign-wrapper">
+                        <a class="btn-floating red delete" title="Удалить"
+                           href="{{imageRouter.resolveDeletePageUrl(image)}}"><i class="material-icons">close</i></a>
+                    </div>
+                </div>
+                {% endif %}
             </div>
-            {% endif %}
-
-            {% if user && (user.userID == image.uploaduserid) %}
-            <div>
-                Адрес удаления картинки:
-                <input style="display: inline-block" class='red lighten-5 black-text text' value='{{imageRouter.resolveDeletePageUrl(image, baseUrl)}}' readonly="readonly">
-            </div>
-            {% endif %}
         </div>
-        &nbsp;
-        <div class="col m10 s12 offset-m1 divider"></div>
         {% endfor %}
 
         {% if images[1] %}

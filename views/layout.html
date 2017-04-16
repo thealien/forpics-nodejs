@@ -21,7 +21,8 @@
     {% endblock %}
     <script>
         var app = {
-            active_menu: 'main'
+            active_menu: 'main',
+            userId: {% if user %}{{ user.userID }}{% else %}null{% endif %}
         };
     </script>
 </head>
