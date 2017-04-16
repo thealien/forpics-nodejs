@@ -9,7 +9,9 @@
         });
 
         $('div.codes a.delete').click(function () {
-
+            if (!confirm('Удалить?')) {
+                return false;
+            }
             var a = $(this);
             a.prop('disabled', true);
             $.ajax({

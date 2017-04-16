@@ -15,7 +15,7 @@
 
 {% block content %}
 
-<div class="container">
+<div>
     {% if images.length %}
     <div class="row">
         {% for image in images%}
@@ -30,17 +30,19 @@
                         {% endif %}
                     </a>
                 </div>
+
                 <div class="card-content">
-                    <a class="right btn-floating halfway-fab waves-effect waves-light gray activator">
+                    <a class="right btn-floating halfway-fab waves-effect waves-light gray activator" title="Инфо">
                         <i class="material-icons right">more_vert</i>
                     </a>
                     <span class="card-title truncate" title="{{ image.originalfilename|e}}">{{ image.originalfilename|e}}</span>
                 </div>
+
                 <div class="card-reveal codes">
                     <span class="card-title grey-text text-darken-4">
-                        {{image.width}} x {{image.height}}, {{image.filesize|fileSize}}
-                        <i class="material-icons right">close</i>
+                        <i class="material-icons right" title="Закрыть">close</i>
                     </span>
+                    <span class="truncate" title="{{ image.originalfilename|e}}">{{ image.originalfilename|e}}</span>
                     <p>
                         <input class='blue lighten-5 black-text text'
                                value='{{imageRouter.resolveImageUrl(image, baseUrl)}}' readonly="readonly">
@@ -48,6 +50,15 @@
                         <input class='orange lighten-5 black-text text'
                                value='{{imageRouter.resolvePreviewUrl(image, baseUrl)}}' readonly="readonly">
                         {% endif %}
+
+
+                        <a class="right btn-floating halfway-fab waves-effect waves-light red delete" title="Удалить" href="{{imageRouter.resolveDeletePageUrl(image)}}">
+                            <i class="material-icons right">close</i>
+                        </a>
+
+                        <small>{{image.width}} x {{image.height}}, {{image.filesize|fileSize}}</small>
+                        <br>
+                        <small>{{ image.date|date('Y.m.d') }} @ {{ image.ip }}</small>
                     </p>
 
                 </div>
