@@ -8,6 +8,7 @@ module.exports = (app, config) => {
     const messages = config.messages || {};
 
     swig.setFilter('fileSize', viewHelpers.fileSize);
+    swig.setDefaults({ locals: { range: viewHelpers.range}});
     swig.setFilter('tr', codename => messages[codename] || codename);
     swig.setDefaults({cache: false});
 

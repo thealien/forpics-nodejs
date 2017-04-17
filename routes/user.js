@@ -1,11 +1,10 @@
 'use strict';
 
-const LinkPager = require('../views/widgets/LinkPager.js');
+const Pagination = require('pagination-object');
 
 module.exports = (router, config, container) => {
     const passport = container.require('app:passport');
     const {User, Image} = container.require('app:models');
-    const pager = LinkPager.create(2, 3);
 
     const guestRequired = (req, res, next) => req.isAuthenticated() ? res.redirect('/') : next();
     const authRequired = (req, res, next) => !req.isAuthenticated() ? res.redirect('/') : next();
@@ -124,11 +123,13 @@ module.exports = (router, config, container) => {
             ]).then(([count, images]) => {
                 res.render('user/gallery', {
                     images: images,
-                    pagination: images.length < count ? pager.build({
-                        currentPage: page,
-                        itemsCount: count,
-                        urlPrefix: '/my/'
-                    }) : ''
+                    pagination: Object.assign(new Pagination({
+                        currentPage  : page,
+                        totalItems   : count,
+                        itemsPerPage : limit
+                    }), {
+                        prefix: '/my/'
+                    })
                 });
             }).catch(next);
         });

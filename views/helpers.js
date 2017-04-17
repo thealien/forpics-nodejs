@@ -14,3 +14,13 @@ exports.fileSize = function (size) {
     } while(size >= kb);
     return size.toFixed(1)+' '+units[u];
 };
+
+exports.range = function (a, b) {
+    const from = Math.min(a, b);
+    const to = Math.max(a, b);
+    const range = [];
+    for (let i = from; i <= to; i++) {
+        range.push(i);
+    }
+    return range;
+};

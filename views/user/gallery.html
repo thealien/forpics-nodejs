@@ -94,7 +94,7 @@
     </div>
     <div class="col s12 center-align">
         <div class="paginator">
-            {{ pagination.render() }}
+            {% include '../snippet/pagination.html' with pagination only %}
         </div>
     </div>
 
