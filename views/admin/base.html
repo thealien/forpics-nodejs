@@ -1,20 +1,3 @@
 {% extends "../layout.html" %}
 
-{% block head_menu_items%}
-
-{% block head_menu_new %}
-<li class="menu-item">
-    <a href="/admin/">Новое</a>
-</li>
-{% endblock %}
-
-{% endblock %}
-
-{% block center %}
-<div id='center' class='forms' style='width: 900px;'>
-    <div id='content'>
-        <h3>Администрирование</h3>
-        {% block content %}{% endblock %}
-    </div>
-</div>
-{% endblock %}
+{% block nav_title %}Администрирование{% endblock %}

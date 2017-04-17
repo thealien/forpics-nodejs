@@ -104,7 +104,7 @@ module.exports = (router, config, container) => {
     router.route('/my/:page?')
         .all(authRequired)
         .get(function (req, res, next) {
-            const limit = 2,
+            const limit = 10,
                 page = Math.max(req.params.page || 1, 1),
                 offset = (page - 1) * limit,
                 userId = req.user.userID,

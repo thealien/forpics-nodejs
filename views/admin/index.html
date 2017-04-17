@@ -1,38 +1,92 @@
 {% extends "base.html" %}
 
-{% block head_menu_new %}
-<li class="menu-item">
-    <a class='current' href="/admin/">Новое</a>
-</li>
+{% block add_js %}
+<script type="text/javascript">
+    app.active_menu = 'admin';
+
+    $(function () {
+        $('div.card-content a.delete').click(function () {
+            if (!confirm('Удалить?')) {
+                return false;
+            }
+            var a = $(this);
+            var delguid = a.data('delguid');
+            a.prop('disabled', true);
+            $.ajax({
+                url: location,
+                type: 'post',
+                dataType: 'json',
+                data:({
+                    delguid: delguid
+                }),
+                success: function (data) {
+                    a.prop('disabled', false);
+                    var success = data.success;
+                    var text = success ? 'Удалено' : data.message;
+                    Materialize.toast(text, 1000);
+                    if (success) {
+                        a.parents('div.card').hide().remove();
+                        if (!$('div.card').length) {
+                            window.location.reload();
+                        }
+                    }
+                },
+                error: function (error) {
+                    console.error(error);
+                    a.prop('disabled', false);
+                }
+            });
+            return false;
+        });
+    });
+</script>
 {% endblock %}
 
 {% block content %}
-<div class='my' style='margin-right: -18px;'>
-    <form action="" method="post">
-        {% for image in images %}
-        <div class="image">
-            <a href='/{{ Yii.params.dirs.path_images }}/{{ image.path_date }}/{{ image.filename }}' target='_blank'>
-                {% if image.preview %}
-                <img class='image' src='/{{ Yii.params.dirs.path_preview }}/{{ image.path_date }}/{{ image.filename }}' alt=''>
-                {% else %}
-                <img class='image' src='/{{ Yii.params.dirs.path_images }}/{{ image.path_date }}/{{ image.filename }}' alt=''>
-                {% endif %}
-            </a>
-            <div><small>{{ image.ip }}</small></div>
-            <div>
-                <input type="submit" name="delete[{{ image.id }}]" value='del' onclick="return confirm('Удалить?');">
+<div>
+    {% if images.length %}
+    <div class="row">
+        {% for image in images%}
+        <div class="col s12 m3 l2">
+            <div class="card small">
+                <div class="card-image waves-effect waves-block waves-light">
+                    <a href='{{imageRouter.resolveImagePageUrl(image)}}' target="_blank">
+                        {% if image.preview %}
+                        <img src='{{imageRouter.resolvePreviewUrl(image)}}' alt=''>
+                        {% else %}
+                        <img src='{{imageRouter.resolveImageUrl(image)}}' alt=''>
+                        {% endif %}
+                    </a>
+                </div>
+
+                <div class="card-content">
+                    <a class="right btn-floating red delete" title="Удалить" data-delguid="{{ image.deleteGuid }}"
+                       href="{{imageRouter.resolveDeletePageUrl(image)}}">
+                        <i class="material-icons right">close</i>
+                    </a>
+                    <small>{{image.width}} x {{image.height}}, {{image.filesize|fileSize}}</small>
+                    <br>
+                    <small>{{ image.date|date('Y.m.d') }} @ {{ image.ip }}</small>
+                    <br>
+                    <small>user ID: {{ image.userId|default('anonimus') }}</small>
+                </div>
             </div>
         </div>
-        <input type="hidden" name="images[]" value="{{ image.id }}">
-        {% else %}
-        Нет новых картинок
         {% endfor %}
-        <br>
-        <input type="submit" name="approve" value='Утвердить'>
-    </form>
-</div>
-<br>
-<div class="paginator">
-    {{ this.widget("CLinkPager", {"pages":pages}, true) }}
+    </div>
+    <div class="col s12 center-align">
+        <div class="paginator">
+            {% include '../snippet/pagination.html' with pagination only %}
+        </div>
+    </div>
+
+    {% else %}
+    <div class="row">
+        <div class="col s12 center align">
+            <h6>Нет новых картинок.</h6>
+        </div>
+    </div>
+    {% endif %}
+
 </div>
 {% endblock %}
