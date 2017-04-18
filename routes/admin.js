@@ -15,44 +15,6 @@ module.exports = (router, config, container) => {
             }
             next();
         })
-        .post(function (req, res, next) {
-            const {delguid} = req.body;
-            if (!delguid) {
-                const error = new Error('Bad request');
-                error.status = 400;
-                return next(error);
-            }
-
-            const query = Image.find({
-                where: {
-                    deleteGuid: delguid
-                }
-            });
-            query
-                .then(image => {
-                    if (!image) {
-                        const error = new Error('Image not found');
-                        error.status = 404;
-                        return next(error);
-                    }
-
-                    processor.delete(image, () => {
-                        image.destroy()
-                            .then(() => {
-                                const json = req.is('json') || req.xhr;
-                                if (json) {
-                                    return res.json({
-                                        success: true
-                                    });
-                                }
-                                return res.redirect('/my/');
-                            })
-                            .catch(next);
-                    });
-
-                })
-                .catch(next);
-        })
         .get((req, res, next) => {
             const limit = 10,
                 page = Math.max(req.params.page || 1, 1),
@@ -84,4 +46,67 @@ module.exports = (router, config, container) => {
             }).catch(next);
         });
 
+    router.route('/admin/delete/:guid')
+        .post((req, res, next) => {
+            const {guid} = req.params;
+            if (!guid) {
+                const error = new Error('Bad request');
+                error.status = 400;
+                return next(error);
+            }
+
+            const query = Image.find({
+                where: {
+                    deleteGuid: guid
+                }
+            });
+            query
+                .then(image => {
+                    if (!image) {
+                        const error = new Error('Image not found');
+                        error.status = 404;
+                        return next(error);
+                    }
+
+                    processor.delete(image, () => {
+                        image.destroy()
+                            .then(() => {
+                                return res.json({
+                                    success: true
+                                });
+                            })
+                            .catch(next);
+                    });
+
+                })
+                .catch(next);
+        });
+
+    router.route('/admin/approve/')
+        .post((req, res, next) => {
+            const {guids} = req.body;
+
+            if (!(guids instanceof Array)) {
+                const error = new Error('Bad request');
+                error.status = 400;
+                return next(error);
+            }
+
+            const query = Image.update({
+                status: 1
+            }, {
+                where: {
+                    guid: {
+                        $in: guids
+                    }
+                }
+            });
+            query
+                .then(() => {
+                    return res.json({
+                        success: true
+                    });
+                })
+                .catch(next);
+        });
 };

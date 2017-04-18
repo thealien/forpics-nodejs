@@ -13,12 +13,9 @@
             var delguid = a.data('delguid');
             a.prop('disabled', true);
             $.ajax({
-                url: location,
+                url: '/admin/delete/' + delguid,
                 type: 'post',
                 dataType: 'json',
-                data:({
-                    delguid: delguid
-                }),
                 success: function (data) {
                     a.prop('disabled', false);
                     var success = data.success;
@@ -38,6 +35,38 @@
             });
             return false;
         });
+
+        $('a.approve-images').click(function () {
+            var guids = [];
+            $('div.card').each(function (i, image) {
+                guids.push($(image).data('guid'));
+            }).toArray();
+
+            if (!guids.length) {
+                return false;
+            }
+            $.ajax({
+                url: '/admin/approve',
+                type: 'post',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify({
+                    guids: guids
+                }),
+                success: function (data) {
+                    var success = data.success;
+                    var text = success ? 'Утверждено' : data.message;
+                    Materialize.toast(text, 1000);
+                    if (success) {
+                        window.location.reload();
+                    }
+                },
+                error: function (error) {
+                    console.error(error);
+                }
+            });
+            return false;
+        });
     });
 </script>
 {% endblock %}
@@ -48,7 +77,7 @@
     <div class="row">
         {% for image in images%}
         <div class="col s12 m3 l2">
-            <div class="card small">
+            <div class="card small" data-guid="{{ image.guid }}">
                 <div class="card-image waves-effect waves-block waves-light">
                     <a href='{{imageRouter.resolveImagePageUrl(image)}}' target="_blank">
                         {% if image.preview %}
@@ -73,6 +102,9 @@
             </div>
         </div>
         {% endfor %}
+        <div class="col s12">
+            <a class="left waves-effect waves-light btn approve-images">утвердить</a>
+        </div>
     </div>
     <div class="col s12 center-align">
         <div class="paginator">
