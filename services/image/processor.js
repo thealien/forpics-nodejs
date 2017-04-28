@@ -34,11 +34,6 @@ class Processor {
             targetPreview,
             i;
 
-
-         if (["image/jpeg", "image/pjpeg"].indexOf(image.mime) !== -1) {
-            //i.autoOrient();
-         }
-
         // 1. checkDestinationPaths
         steps.push(callback => {
             processor.checkDestinationPaths((error, destPaths) => {
@@ -71,6 +66,8 @@ class Processor {
             steps.push(callback => {
                 i = gm(targetImage);
 
+                i.autoOrient();
+                
                 if (options.resize) {
                     let [width, height] = options.resize;
                     i.resize(width, height);
@@ -93,7 +90,7 @@ class Processor {
             steps.push(callback => {
                 i = i || gm(targetImage);
                 const [width, height] = options.preview;
-                i.resize(width, height).write(targetPreview, callback);
+                i.autoOrient().resize(width, height).write(targetPreview, callback);
             });
         }
 
