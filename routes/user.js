@@ -24,10 +24,11 @@ module.exports = (router, config, container) => {
 
             const validation = user.validate();
             validation
-                .then((result = {}) => {
+                .then((result) => {
+                    result = result || {};
                     const {errors} = result;
 
-                    if (errors.length) {
+                    if (errors && errors.length) {
                         errors.forEach(error => req.flash('error', error.message));
                         return next();
                     }
@@ -123,7 +124,7 @@ module.exports = (router, config, container) => {
             ]).then(([count, images]) => {
                 res.render('user/gallery', {
                     images: images,
-                    pagination: Object.assign(new Pagination({
+                    pagination: !count ? {} : Object.assign(new Pagination({
                         currentPage  : page,
                         totalItems   : count,
                         itemsPerPage : limit
