@@ -4,6 +4,7 @@ const async =require('async');
 const fs = require('fs');
 const imagesize = require('image-size');
 const path = require('path');
+const multer = require('multer');
 
 const utils = require('../utils');
 
@@ -14,7 +15,18 @@ module.exports = (router, config, container) => {
     const imageRouter = container.require('image:router');
     const {Image} = container.require('app:models');
     const uploadConfig = config.imageProcess;
+
     const {filesFormField} = config.app;
+    const uploadFilesHandler = multer(Object.assign({
+            fileFilter: (req, file, cb) => {
+                const ext = getExtension(file.originalname);
+                const accepted = validator.isAllowedExtension(String(ext).toLowerCase());
+                cb(null, accepted);
+            }
+        }, config.multer
+    )).fields([{
+        name: filesFormField
+    }]);
 
     /**
      * Main page
@@ -29,7 +41,7 @@ module.exports = (router, config, container) => {
     /**
      * Upload from web | Upload from windows-client
      */
-    router.post('/up', (req, res) => {
+    router.post('/up', uploadFilesHandler, (req, res) => {
         handleUpload(req, (error, processedImages = [], rejectedImages = []) => {
             if (rejectedImages.length) {
                 req.flash('rejectedImages', rejectedImages);
@@ -53,10 +65,10 @@ module.exports = (router, config, container) => {
     });
 
 
-    router.post('/upload', (req, res) => {
+    router.post('/upload', uploadFilesHandler, (req, res, next) => {
         handleUpload(req, (error, processedImages = [], rejectedImages = []) => {
             if (error) {
-                return res.status(500).send('Internal Server Error');
+                return next(error);
             }
 
             res.locals = app.locals;
@@ -281,7 +293,7 @@ module.exports = (router, config, container) => {
     }
 
     function getExtension (filename) {
-        return path.extname(filename).replace(/^\./, '');
+        return path.extname(String(filename)).replace(/^\./, '');
     }
 
 };

@@ -34,11 +34,10 @@ class Processor {
             targetPreview,
             i;
 
-        /*
+
          if (["image/jpeg", "image/pjpeg"].indexOf(image.mime) !== -1) {
-         i.autoOrient();
+            //i.autoOrient();
          }
-         */
 
         // 1. checkDestinationPaths
         steps.push(callback => {

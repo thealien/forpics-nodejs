@@ -5,40 +5,46 @@ const Pagination = require('pagination-object');
 module.exports = (router, config, container) => {
     const processor = container.require('image:processor');
     const {Image} = container.require('app:models');
+
+    const checkAdmin = (req, res, next) => {
+        const {user} = req;
+        if (user && user.isAdmin()) {
+            return next();
+        }
+        return res.status(403).send('Forbidden');
+    };
+
     /**
-     * Admin page
+     * Check iа user is admin
+     */
+    router.route('/admin/?*').all(checkAdmin);
+
+    /**
+     * Show no approved images
      */
     router.route('/admin/:page?')
-        .all((req, res, next) => {
-            if (!req.isAuthenticated()) {
-                return res.redirect('/');
-            }
-            next();
-        })
         .get((req, res, next) => {
-            const limit = 10,
-                page = Math.max(req.params.page || 1, 1),
-                offset = (page - 1) * limit,
-                where = {
-                    status: 0
-                };
+            const imagesOnPage = 10;
+            const page = Math.max(req.params.page || 1, 1);
+            const offset = (page - 1) * imagesOnPage;
+            const where = { status: 0 };
 
             Promise.all([
                 Image.count({where: where}),
                 Image.findAll({
                     where: where,
                     offset: offset,
-                    limit: limit,
+                    limit: imagesOnPage,
                     order: 'id ASC'
                 })
             ]).then(([count, images]) => {
-                res.render('admin/index', {
+                return res.render('admin/index', {
                     title:'Администрирование',
                     images: images,
                     pagination: Object.assign(new Pagination({
                         currentPage  : page,
                         totalItems   : count,
-                        itemsPerPage : limit
+                        itemsPerPage : imagesOnPage
                     }), {
                         prefix: '/admin/'
                     })
@@ -46,13 +52,14 @@ module.exports = (router, config, container) => {
             }).catch(next);
         });
 
+    /**
+     * Delete not approved image
+     */
     router.route('/admin/delete/:guid')
         .post((req, res, next) => {
             const {guid} = req.params;
             if (!guid) {
-                const error = new Error('Bad request');
-                error.status = 400;
-                return next(error);
+                return res.status(400).send('Bad request');
             }
 
             const query = Image.find({
@@ -60,16 +67,15 @@ module.exports = (router, config, container) => {
                     deleteGuid: guid
                 }
             });
+
             query
                 .then(image => {
                     if (!image) {
-                        const error = new Error('Image not found');
-                        error.status = 404;
-                        return next(error);
+                        return res.status(404).send('Not found');
                     }
 
                     processor.delete(image, () => {
-                        image.destroy()
+                        return image.destroy()
                             .then(() => {
                                 return res.json({
                                     success: true
@@ -77,19 +83,19 @@ module.exports = (router, config, container) => {
                             })
                             .catch(next);
                     });
-
                 })
                 .catch(next);
         });
 
+    /**
+     * Approve images
+     */
     router.route('/admin/approve/')
         .post((req, res, next) => {
             const {guids} = req.body;
 
             if (!(guids instanceof Array)) {
-                const error = new Error('Bad request');
-                error.status = 400;
-                return next(error);
+                return res.status(400).send('Bad request');
             }
 
             const query = Image.update({

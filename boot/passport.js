@@ -24,7 +24,7 @@ module.exports = (app, config, container) => {
             .catch(done);
     }));
 
-    passport.serializeUser((user, done) => done(null, user.userID));
+    passport.serializeUser((user, done) => done(null, user.userID));     
 
     passport.deserializeUser((id, done) => {
         const query = User.find({where: {userID: id}});

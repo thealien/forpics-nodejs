@@ -1,7 +1,7 @@
 {
   "dest": "./runtime/uploads/",
   "limits": {
-    "files": 20,
-    "fields": 10
+    "files": 50,
+    "fields": 5
   }
 }
