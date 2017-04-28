@@ -1,0 +1,32 @@
+{% if currentPage %}
+<ul class="pagination">
+    {% for item in range %}
+        {% if item.isFirst %}
+        <li class="waves-effect">
+            <a href="{{ prefix|default('/') }}">начало</a>
+        </li>
+        {% elif item.isPrevious %}
+        <li class="waves-effect">
+            <a href="{{ prefix|default('/') }}{{ previousPage|default(currentPage) }}"><i class="material-icons">chevron_left</i></a>
+        </li>
+        {% elif item.isCurrent %}
+        <li class="active">
+            <a href="{{ prefix|default('/') }}{{ item.page }}">{{ item.page }}</a>
+        </li>
+        {% elif item.isNext  %}
+        <li class="waves-effect">
+            <a href="{{ prefix|default('/') }}{{ nextPage|default(currentPage) }}"><i class="material-icons">chevron_right</i></a>
+        </li>
+        {% elif item.isLast %}
+        <li class="waves-effect">
+            <a href="{{ prefix|default('/') }}{{ totalPages }}">конец</a>
+        </li>
+        {% else %}
+        <li class="waves-effect">
+            <a href="{{ prefix|default('/') }}{{ item.page }}">{{ item.page }}</a>
+        </li>
+        {% endif %}
+    {% endfor %}
+</ul>
+{% endif %}
+
