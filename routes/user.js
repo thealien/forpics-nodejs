@@ -124,7 +124,7 @@ module.exports = (router, config, container) => {
             ]).then(([count, images]) => {
                 res.render('user/gallery', {
                     images: images,
-                    pagination: !count ? {} : Object.assign(new Pagination({
+                    pagination: count < 2 ? {} : Object.assign(new Pagination({
                         currentPage  : page,
                         totalItems   : count,
                         itemsPerPage : limit

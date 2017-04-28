@@ -41,7 +41,7 @@ module.exports = (router, config, container) => {
                 return res.render('admin/index', {
                     title:'Администрирование',
                     images: images,
-                    pagination: !count ? {} : Object.assign(new Pagination({
+                    pagination: count < 2 ? {} : Object.assign(new Pagination({
                         currentPage  : page,
                         totalItems   : count,
                         itemsPerPage : imagesOnPage
