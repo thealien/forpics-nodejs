@@ -20,6 +20,7 @@ module.exports = (app, config, container) => {
         app.use(morgan('dev'));
     }
 
+    app.enable('trust proxy');
     app.use(ipv4());
 
     // forms handling
