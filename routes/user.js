@@ -105,9 +105,9 @@ module.exports = (router, config, container) => {
     router.route('/my/:page?')
         .all(authRequired)
         .get(function (req, res, next) {
-            const limit = 10,
+            const imagesOnPage = 10,
                 page = Math.max(req.params.page || 1, 1),
-                offset = (page - 1) * limit,
+                offset = (page - 1) * imagesOnPage,
                 userId = req.user.userID,
                 where = {
                     uploaduserid: userId
@@ -118,16 +118,16 @@ module.exports = (router, config, container) => {
                 Image.findAll({
                     where: where,
                     offset: offset,
-                    limit: limit,
+                    limit: imagesOnPage,
                     order: 'id DESC'
                 })
             ]).then(([count, images]) => {
                 res.render('user/gallery', {
                     images: images,
-                    pagination: count < 2 ? {} : Object.assign(new Pagination({
+                    pagination: count <= imagesOnPage ? {} : Object.assign(new Pagination({
                         currentPage  : page,
                         totalItems   : count,
-                        itemsPerPage : limit
+                        itemsPerPage : imagesOnPage
                     }), {
                         prefix: '/my/'
                     })
