@@ -4,7 +4,7 @@
 </h5>
 <div class="collection">
     {% for image in rejectedImages %}
-    <li class="collection-item red accent-1">&bull; {{ image.file.originalname|e }} - {{ image.error|tr|e }}</li>
+    <li class="collection-item red accent-1">{{ image.file.originalname|e }} - {{ image.error|tr|e }}</li>
     {% endfor %}
 </div>
 {% endif %}
