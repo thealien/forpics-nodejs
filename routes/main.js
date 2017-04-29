@@ -93,7 +93,7 @@ module.exports = (router, config, container) => {
     //
 
     function handleUpload (req, callback) {
-        const receivedFiles = [].concat(req.files[filesFormField]);
+        const receivedFiles = [].concat(req.files[filesFormField] || []);
         const rejectedImages = [];
         const processedImages = [];
         const steps = [];
