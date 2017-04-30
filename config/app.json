@@ -1,4 +1,8 @@
 {
+    "server": {
+        "host": "localhost",
+        "port": 3000
+    },
     "session" : {
         "cookie": {
             "maxAge": 31536000000
@@ -11,5 +15,5 @@
         "previews": "p"
     },
 
-    "filesFormField": "uploadfile[]"
+    "filesFormField": "uploadfile"
 }

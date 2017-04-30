@@ -52,6 +52,7 @@ module.exports = (router, config, container) => {
         .all((req, res) => {
             const {body} = req;
             res.render('user/register', Object.assign({
+                title:'Регистрация',
                 messages: req.flash()
             }, body));
         });
@@ -84,6 +85,7 @@ module.exports = (router, config, container) => {
                 messages = req.flash();
 
             res.render('user/login', {
+                title:'Вход',
                 username: body.username,
                 password: body.password,
                 messages: messages
@@ -123,6 +125,7 @@ module.exports = (router, config, container) => {
                 })
             ]).then(([count, images]) => {
                 res.render('user/gallery', {
+                    title:'Мои картинки',
                     images: images,
                     pagination: count <= imagesOnPage ? {} : Object.assign(new Pagination({
                         currentPage  : page,

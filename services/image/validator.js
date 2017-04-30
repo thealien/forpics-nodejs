@@ -33,9 +33,11 @@ class Validator {
             return new Error('Неподдерживаемый тип файла');
         }
 
+        /*
         if (!this.isAllowedMimetype(mimetype)) {
             return new Error('Неподдерживаемый тип файла (mime)');
         }
+        */
 
         return null;
     }

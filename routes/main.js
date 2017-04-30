@@ -24,16 +24,14 @@ module.exports = (router, config, container) => {
                 cb(null, accepted);
             }
         }, config.multer
-    )).fields([{
-        name: filesFormField
-    }]);
+    )).array(filesFormField);
 
     /**
      * Main page
      */
     router.get('/', (req, res) => {
         res.render('main/index', {
-            title: 'Main page',
+            title: 'Главная',
             messages: req.flash()
         });
     });
@@ -93,7 +91,7 @@ module.exports = (router, config, container) => {
     //
 
     function handleUpload (req, callback) {
-        const receivedFiles = [].concat(req.files[filesFormField] || []);
+        const receivedFiles = [].concat(req.files || []);
         const rejectedImages = [];
         const processedImages = [];
         const steps = [];
