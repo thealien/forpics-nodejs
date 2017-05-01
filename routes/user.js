@@ -107,7 +107,7 @@ module.exports = (router, config, container) => {
     router.route('/my/:page?')
         .all(authRequired)
         .get(function (req, res, next) {
-            const imagesOnPage = 10,
+            const imagesOnPage = 24,
                 page = Math.max(req.params.page || 1, 1),
                 offset = (page - 1) * imagesOnPage,
                 userId = req.user.userID,

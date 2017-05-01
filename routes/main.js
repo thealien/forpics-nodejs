@@ -12,10 +12,12 @@ module.exports = (router, config, container) => {
     const app = container.require('app:core');
     const validator = container.require('image:validator');
     const processor = container.require('image:processor');
+    const logger = container.require('app:logger');
     const imageRouter = container.require('image:router');
     const {Image} = container.require('app:models');
     const uploadConfig = config.imageProcess;
 
+    const emptyFn = ()=>{};
     const {filesFormField} = config.app;
     const uploadFilesHandler = multer(Object.assign({
             fileFilter: (req, file, cb) => {
@@ -154,9 +156,10 @@ module.exports = (router, config, container) => {
             async.each(acceptedImages, (image, callback) => {
                 processor.process(image, options, (error, result) => {
                     if (error) {
+                        logger.error(error);
                         rejectedImages.push({
                             file: image,
-                            error: error.message
+                            error: 'Ошибка обработки изображения. Попробуйте позже.'
                         });
                     } else {
                         result.group = groupGuid;
@@ -248,7 +251,7 @@ module.exports = (router, config, container) => {
     }
 
     function deleteRejectedImages (images = []) {
-        images.forEach(image => fs.unlink(image.file.path));
+        images.forEach(image => fs.unlink(image.file.path, emptyFn));
     }
 
     function sendXmlResponse (res, processedImages, rejectedImages) {

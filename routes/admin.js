@@ -24,7 +24,7 @@ module.exports = (router, config, container) => {
      */
     router.route('/admin/:page?')
         .get((req, res, next) => {
-            const imagesOnPage = 10;
+            const imagesOnPage = 12;
             const page = Math.max(req.params.page || 1, 1);
             const offset = (page - 1) * imagesOnPage;
             const where = { status: 0 };
