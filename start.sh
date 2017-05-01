@@ -1,1 +1,0 @@
-NODE_ENV=production forever start -a app.js
