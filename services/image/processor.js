@@ -74,7 +74,7 @@ class Processor {
                 }
 
                 if (options.rotate) {
-                    const color = 'white;'
+                    const color = 'white';
                     i.rotate(color, options.rotate);
                 }
 
