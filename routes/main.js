@@ -14,6 +14,7 @@ module.exports = (router, config, container) => {
     const processor = container.require('image:processor');
     const logger = container.require('app:logger');
     const imageRouter = container.require('image:router');
+    const passport = container.require('app:passport');
     const {Image} = container.require('app:models');
     const uploadConfig = config.imageProcess;
 
@@ -27,6 +28,15 @@ module.exports = (router, config, container) => {
             }
         }, config.multer
     )).array(filesFormField);
+
+    const onTheFlyAuthHandler = (req, res, next) => {
+        passport.authenticate('local', (error, user) => {
+            if (user) {
+                req.user = user;
+            }
+            next();
+        })(req, res, next);
+    };
 
     /**
      * Main page
@@ -64,8 +74,7 @@ module.exports = (router, config, container) => {
         });
     });
 
-
-    router.post('/upload', uploadFilesHandler, (req, res, next) => {
+    router.post('/upload', uploadFilesHandler, onTheFlyAuthHandler, (req, res, next) => {
         handleUpload(req, (error, processedImages = [], rejectedImages = []) => {
             if (error) {
                 return next(error);
@@ -244,7 +253,7 @@ module.exports = (router, config, container) => {
 
         image
             .save()
-            .then(function (result) {
+            .then(result => {
                 callback(null, result);
             })
             .catch(callback);
