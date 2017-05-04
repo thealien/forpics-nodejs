@@ -12,6 +12,7 @@
     </title>
     {% block add_meta %}
     {% endblock %}
+    <link href="favicon.ico" type="image/x-icon" rel="shortcut icon">
     <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css"
           media="screen,projection">
@@ -45,7 +46,7 @@
     <ul class="side-nav fixed" id="nav-mobile">
         <li class="">
             <a href="/" title="На главную" id="logo">
-                <img width="180" height="40" src="/images/logo.png">
+                <img width="180" height="40" src="/images/logo.png?2">
             </a>
         </li>
         <li class="bold main"><a href="/" class="waves-effect waves-teal">Добавить изображение</a></li>
@@ -83,6 +84,10 @@
 <script type='text/javascript' src='/js/upload.js'></script>
 {% block add_js %}
 {% endblock %}
+
+{% if IS_PROD %}
+<!-- Yandex.Metrika counter --> <script type="text/javascript"> (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter7355734 = new Ya.Metrika({ id:7355734, clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://mc.yandex.ru/metrika/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks"); </script> <noscript><div><img src="https://mc.yandex.ru/watch/7355734" style="position:absolute; left:-9999px;" alt="" /></div></noscript> <!-- /Yandex.Metrika counter -->
+{% endif %}
 
 </body>
 {% endblock %}
