@@ -21,6 +21,7 @@ module.exports = (router, config, container) => {
                 }
 
                 res.render('images/view', {
+                    title:'Просмотр картинки',
                     images: [image],
                     messages: req.flash()
                 });
@@ -48,6 +49,7 @@ module.exports = (router, config, container) => {
                 }
 
                 res.render('images/view', {
+                    title:'Просмотр группы картинок',
                     images: images,
                     messages: req.flash()
                 });
@@ -109,6 +111,7 @@ module.exports = (router, config, container) => {
                     }
 
                     res.render('images/delete', {
+                        title:'Удаление картинки',
                         image: image,
                     });
                 })

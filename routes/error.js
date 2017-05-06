@@ -8,6 +8,7 @@ module.exports = (router, config, container) => {
     router.use((req, res, next) => {
         const err = new Error('Not Found');
         err.status = 404;
+        err.expose = true;
         next(err);
     });
 
