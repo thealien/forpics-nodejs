@@ -1,35 +1,44 @@
 {% extends "../layout.html" %}
 
-{% block head_menu_my %}
-<li class="menu-item">
-    <a href="/my/" class='current' title='Просмотр картинок, залитых мной'>Мои картинки</a>
-</li>
-{% endblock %}
-
 {% block content %}
+<div class="container">
+    <div class="row">
+        <div class="section">
+            <div class="col s12 center-align">
+                <h5>Удаление картинки <a href="{{imageRouter.resolveImagePageUrl(image)}}" target="_blank">{{
+                    image.originalfilename|e}}</a></h5>
+            </div>
+            <div class="col s12 m6">
+                <div>{{image.width}} x {{image.height}}, {{image.filesize|fileSize}}</div>
+                <div class="hide-on-med-and-up">
+                    <small>{{ image.date|date('Y.m.d') }} @ {{ image.ip }}</small>
+                </div>
+                <a href="{{imageRouter.resolveImageUrl(image)}}" target="_blank">
+                    {% if image.preview && image.filesize > 300*1024 %}
+                    <img width="100%" class='z-depth-2'
+                         src='{{imageRouter.resolvePreviewUrl(image)}}'
+                         alt=''>
+                    {% else %}
+                    <img width="100%" class='z-depth-2' style="max-height: 400px"
+                         src='{{imageRouter.resolveImageUrl(image)}}'
+                         alt=''>
+                    {% endif %}
+                </a>
+                <div class="hide-on-small-only">
+                    <small>{{ image.date|date('Y.m.d') }} @ {{ image.ip }}</small>
+                </div>
+            </div>
+        </div>
 
-<div class='detail group'>
+        <div class="section">
+            <div class="col s12 m6">
+                <div>&nbsp;</div>
+                <form action="" method="post">
+                    <input class="waves-effect waves-light btn red" name="delete" type='submit' value="Да, удалить">
+                </form>
+            </div>
+        </div>
 
-    <a href='/{{paths.images}}/{{image.path_date}}/{{image.filename}}' target='_blank' class='poster_link'>
-        {% if image.preview %}
-        <img class='image' src='/{{paths.previews}}/{{image.path_date}}/{{image.filename}}' alt=''>
-        {% else %}
-        <img class='image' src='/{{paths.images}}/{{image.path_date}}/{{image.filename}}' alt=''>
-        {% endif %}
-        <br>
-        {{image.width}} x {{image.height}}, {{image.filesize|fileSize}}
-    </a>
-
-    <div class='codes' style="text-align: center;">
-        <h3>Подтверждение удаления картинки</h3>
-        <form action="" method="post">
-            <input name="delete" type='submit' value="Да, удалить" style="width: auto; display: inline; cursor: pointer;">
-            &nbsp;
-            или
-            &nbsp;
-            <a href='/image/{{ image.path_date }}/{{ image.guid }}'>вернуться назад</a>
-        </form>
     </div>
-    <div class='clear'></div>
 </div>
 {% endblock %}

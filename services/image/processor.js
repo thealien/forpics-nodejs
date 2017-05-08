@@ -25,6 +25,7 @@ class Processor {
             pwidth: null,
             pheight: null
         };
+        const {quality} = processor.config;
         const steps = [];
         const willBeModified = options.resize || options.rotate || options.normalize;
 
@@ -82,7 +83,7 @@ class Processor {
                     i.normalize();
                 }
 
-                i.write(targetImage, callback);
+                i.quality(quality).write(targetImage, callback);
             });
         }
 
@@ -91,7 +92,7 @@ class Processor {
             steps.push(callback => {
                 i = i || gm(targetImage);
                 const [width, height] = options.preview;
-                i.autoOrient().resize(width, height).write(targetPreview, callback);
+                i.autoOrient().resize(width, height).quality(quality).write(targetPreview, callback);
             });
         }
 
