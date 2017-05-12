@@ -5,10 +5,10 @@ module.exports = (app, config, container) => {
         'image:validator': "./image-validator",
         'image:processor': "./image-processor",
         'image:router': "./image-router",
-        'app:core': "./express",
+        'app:core': "./koa",
         'app:logger': "./logger",
         'app:models': "./models",
-        'app:passport': "./passport"
+        //'app:passport': "./passport"
     };
 
     Object.keys(modules).forEach(name => {

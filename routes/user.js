@@ -2,27 +2,55 @@
 
 const Pagination = require('pagination-object');
 
-module.exports = (router, config, container) => {
+module.exports = (app, config, container) => {
     const passport = container.require('app:passport');
     const {User, Image} = container.require('app:models');
 
-    const guestRequired = (req, res, next) => req.isAuthenticated() ? res.redirect('/') : next();
-    const authRequired = (req, res, next) => !req.isAuthenticated() ? res.redirect('/') : next();
+    const guestRequired = async (ctx, next) => req.isAuthenticated() ? ctx.redirect('/') : await next();
+    const authRequired = async (req, res, next) => !req.isAuthenticated() ? ctx.redirect('/') : await next();
 
     /**
      * Registration page
      */
-    router.route('/user/register')
-        .all(guestRequired)
-        .post((req, res, next) => {
-            const {body} = req;
+    app.route('/user/register')
+        // .all(guestRequired)
+        .post(async (ctx, next) => {
+            const {flash} = ctx;
+            const {body} = ctx.request;
+
             const user = User.build({
                 email: body.email,
                 username: body.username,
                 password: body.password
             });
 
-            const validation = user.validate();
+            try {
+                const validation = await user.validate();
+                const result = validation || {};
+                const {errors} = result;
+
+                if (errors && errors.length) {
+                    flash.set(errors.map(error => ({
+                        type: 'error', message:error.message
+                    })));
+                    return await next();
+                }
+
+                await user.save();
+                // TODO
+                /*
+                req.logIn(user, error => {
+                    return error ? next(error) : res.redirect('/');
+                });
+                */
+            } catch (e) {
+                flash.set([{
+                    type: 'error', message: 'Не удалось зарегистрироваться. Попробуйте позже.'
+                }]);
+                await next();
+            }
+
+            /*
             validation
                 .then((result) => {
                     result = result || {};
@@ -47,22 +75,23 @@ module.exports = (router, config, container) => {
                 .catch(() => {
                     req.flash('error', 'Не удалось зарегистрироваться. Попробуйте позже.');
                     next();
-                });
+                });*/
         })
-        .all((req, res) => {
-            const {body} = req;
-            res.render('user/register', Object.assign({
+        .all(async ctx => {
+            const {body} = ctx.request;
+            ctx.body = await ctx.render('user/register', Object.assign({
                 title:'Регистрация',
-                messages: req.flash()
+                messages: ctx.flash.get()
             }, body));
         });
 
     /**
      * Login page
      */
-    router.route('/user/login')
-        .all(guestRequired)
-        .post(function (req, res, next) {
+
+    app.route('/user/login')
+        //.all(guestRequired)
+        .post(async (ctx, next) => {
             passport.authenticate('local', function (error, user, info) {
                 if (info && info.error) {
                     req.flash('error', info.error);
@@ -80,31 +109,25 @@ module.exports = (router, config, container) => {
                 });
             })(req, res, next);
         })
-        .all(function (req, res) {
-            const body = req.body,
-                messages = req.flash();
+        .all(async ctx => {
+            const {body} = ctx.request;
+            const messages = ctx.flash.get();
 
-            res.render('user/login', {
+            ctx.body = await ctx.render('user/login', {
                 title:'Вход',
                 username: body.username,
                 password: body.password,
                 messages: messages
             });
         });
-
-    /**
-     *
-     */
-    router.route('/user/logout')
+/*
+    app.route('/user/logout')
         .get(function (req, res) {
             req.logout();
             res.redirect('/');
         });
 
-    /**
-     * Page with my images
-     */
-    router.route('/my/:page?')
+    app.route('/my/:page?')
         .all(authRequired)
         .get(function (req, res, next) {
             const imagesOnPage = 24,
@@ -137,5 +160,6 @@ module.exports = (router, config, container) => {
                 });
             }).catch(next);
         });
+        */
 
 };

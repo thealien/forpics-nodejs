@@ -5,7 +5,6 @@ const viewHelpers = require('../../views/helpers');
 const MAX_HEIGHT = 10000;
 const MAX_WIDTH = 10000;
 const MAX_SIZE = 10*1024*1024;
-const MAX_SIZE_TEXT = viewHelpers.fileSize(MAX_SIZE);
 const ALLOWED_EXT = [
     "jpg", "jpeg", "gif", "png"
 ];

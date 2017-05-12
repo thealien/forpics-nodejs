@@ -1,11 +1,11 @@
 'use strict';
 
-const express = require('express');
+const Koa = require('koa');
 const container = require('smallbox');
 const config = require('./config');
-const app = express();
+const app = new Koa();
 
-app.isProd = app.get('env') === 'production';
+app.context.isProd = app.env === 'production';
 
 // boot
 require('./boot')(app, config, container);
@@ -18,4 +18,5 @@ let {host, port} = config.app.server;
 
 host = ENV_HOST || host;
 port = ENV_PORT || port;
-app.listen(port, host, () => console.log(`Server listening on ${host}:${port}`));
+app.listen(port, host);
+console.log(`Server listening on ${host}:${port}`);

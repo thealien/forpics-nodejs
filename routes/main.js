@@ -8,7 +8,8 @@ const multer = require('multer');
 
 const utils = require('../utils');
 
-module.exports = (router, config, container) => {
+module.exports = (app, config, container) => {
+    /*
     const app = container.require('app:core');
     const validator = container.require('image:validator');
     const processor = container.require('image:processor');
@@ -20,6 +21,7 @@ module.exports = (router, config, container) => {
 
     const emptyFn = ()=>{};
     const {filesFormField} = config.app;
+
     const uploadFilesHandler = multer(Object.assign({
             fileFilter: (req, file, cb) => {
                 const ext = getExtension(file.originalname);
@@ -37,20 +39,23 @@ module.exports = (router, config, container) => {
             next();
         })(req, res, next);
     };
+     */
 
     /**
      * Main page
      */
-    router.get('/', (req, res) => {
-        res.render('main/index', {
-            title: 'Главная',
-            messages: req.flash()
+    app.route('/')
+        .get(async(ctx, next) => {
+            ctx.body = await ctx.render('main/index', {
+                messages: ctx.flash.get(),
+                title: 'Главная'
+            });
         });
-    });
 
     /**
      * Upload from web | Upload from windows-client
      */
+/*
     router.post('/up', uploadFilesHandler, (req, res) => {
         handleUpload(req, (error, processedImages = [], rejectedImages = []) => {
             if (rejectedImages.length) {
@@ -95,7 +100,7 @@ module.exports = (router, config, container) => {
             responseFn(res, processedImages, rejectedImages);
         });
     });
-
+*/
 
     //
     // Helpers functions

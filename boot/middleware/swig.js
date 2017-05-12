@@ -1,19 +1,38 @@
 'use strict';
 
 const path = require('path');
-const swig = require('swig-templates');
+const render = require('koa-swig');
+const co = require('co');
 const viewHelpers = require('../../views/helpers');
 
-module.exports = (app, config) => {
+module.exports = (app, config, container) => {
+    const imageRouter = container.require('image:router');
     const messages = config.messages || {};
 
-    swig.setFilter('fileSize', viewHelpers.fileSize);
-    swig.setDefaults({ locals: { range: viewHelpers.range}});
-    swig.setFilter('tr', codename => messages[codename] || codename);
-    swig.setDefaults({cache: false});
+    const root = path.join(__dirname, '../../views');
+    const cache = app.context.isProd ? 'memory' : false;
+    const locals = {
+        imageRouter,
+        IS_PROD: app.isProd
+    };
+    const filters = {
+        'tr': codename => messages[codename] || codename,
+        'fileSize': viewHelpers.fileSize
+    };
 
-    app.engine('html', swig.renderFile);
+    app.context.render = co.wrap(render({
+        root,
+        cache,
+        locals,
+        filters,
+        ext: 'html',
+        writeBody: false
+    }));
 
-    app.set('views', path.join(__dirname, '../../views'));
-    app.set('view engine', 'html');
+    app.use(async (ctx, next) => {
+        if (!locals.baseUrl) {
+            locals.baseUrl = ctx.request.origin;
+        }
+        await next();
+    });
 };

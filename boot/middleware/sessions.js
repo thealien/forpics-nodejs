@@ -1,19 +1,18 @@
 'use strict';
 
-const session = require('express-session');
-const FileStore = require('session-file-store')(session);
+const session = require('koa-session-minimal');
+const FileStore = require("koa-generic-session-file");
 
 module.exports = (app, config) => {
     const sessionConfig = config.app.session;
+    const store = new FileStore({
+        sessionDirectory: sessionConfig.directory
+    });
 
+    app.keys = [sessionConfig.secret];
     app.use(session({
-        secret: sessionConfig.secret,
-        store: new FileStore({
-            path: './runtime/sessions',
-            encrypt: true
-        }),
+        key: 'connect.sid',
         cookie: sessionConfig.cookie,
-        resave: false, // TODO check docs
-        saveUninitialized: false // TODO check docs
+        store
     }));
 };

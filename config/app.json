@@ -4,6 +4,7 @@
         "port": 3000
     },
     "session" : {
+        "directory": "./runtime/sessions",
         "cookie": {
             "maxAge": 31536000000
         },
