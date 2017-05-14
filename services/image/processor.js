@@ -71,7 +71,7 @@ class Processor {
                 
                 if (options.resize) {
                     let [width, height] = options.resize;
-                    i.resize(width, height);
+                    i.geometry(width, height, '>');
                 }
 
                 if (options.rotate) {
@@ -92,7 +92,7 @@ class Processor {
             steps.push(callback => {
                 i = i || gm(targetImage);
                 const [width, height] = options.preview;
-                i.autoOrient().resize(width, height).quality(quality).write(targetPreview, callback);
+                i.autoOrient().geometry(width, height, '>').quality(quality).write(targetPreview, callback);
             });
         }
 
