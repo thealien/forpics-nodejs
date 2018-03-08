@@ -8,7 +8,8 @@ module.exports = (app, config, container) => {
     Object.assign(locals, {
         imageRouter,
         paths,
-        IS_PROD: app.isProd
+        IS_PROD: app.isProd,
+        currentYear: new Date().getFullYear()
     });
 
     app.use((req, res, next) => {
